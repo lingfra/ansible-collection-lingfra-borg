@@ -1,0 +1,16 @@
+---
+namespace: lingling9000
+name: borg
+version: "1.0.0"
+readme: README.md
+authors:
+  - lingling <lingling+dev@posteo.de>
+description: Install a central backup server for borg and configure clients.
+license_file: "LICENSE"
+repository: https://codeberg.org/lingling/ansible-collection-lingling9000-borg
+tags:
+  - backup
+  - borg
+  - infrastructure
+  - linux
+dependencies: {}
