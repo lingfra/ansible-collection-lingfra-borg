@@ -1,0 +1,6 @@
+---
+# defaults file for borginstall
+
+borginstall_add_client_pkgs: false
+
+# End of file

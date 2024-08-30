@@ -1,0 +1,32 @@
+---
+# tasks file for borginstall
+
+- name: Include OS specific variables
+  ansible.builtin.include_vars: "{{lookup('ansible.builtin.first_found', params)}}"
+  vars:
+    params:
+      files:
+        - '{{ ansible_distribution }}.yaml'
+        - '{{ ansible_os_family }}.yaml'
+        - default.yaml
+      paths:
+        - 'vars'
+
+# ---------- Configure ----------
+
+- name: Compose package list
+  ansible.builtin.set_fact:
+    borginstall_pkg_list: "{{
+        borginstall_pkg_list_all
+        + (borginstall_add_client_pkgs | ternary(borginstall_pkg_list_client, []))
+      }}"
+  tags:
+    - configure
+
+- name: Install borg and dependencies
+  ansible.builtin.package:
+    name: "{{ borginstall_pkg_list }}"
+    state: present
+  become: true
+
+# End of file
