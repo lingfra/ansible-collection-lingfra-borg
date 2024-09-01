@@ -1,0 +1,13 @@
+---
+- name: Configure central borg repository server
+  hosts: "{{ target | default('all') }}"
+  gather_facts: true
+  tags:
+    - borg_server
+  tasks:
+    - name: Include role lingfra.borg.borg_server
+      ansible.builtin.include_role:
+        name: lingfra.borg.borg_server
+        apply:
+          tags:
+            - borg_server
