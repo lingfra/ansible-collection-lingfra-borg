@@ -1,0 +1,15 @@
+---
+driver:
+  name: podman
+platforms:
+  - name: borg-client
+    image: archlinux:latest
+    pre_build_image: true
+  - name: borg-server
+    image: archlinux:latest
+    pre_build_image: true
+provisioner:
+  name: ansible
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml

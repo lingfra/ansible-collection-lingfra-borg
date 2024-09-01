@@ -1,0 +1,22 @@
+---
+- name: Set playbook variables
+  hosts: all
+  tasks:
+    # Connection to podman container is already root and sudo is not available.
+    - name: Set ansible_become to false
+      ansible.builtin.set_fact:
+        ansible_become: false
+
+- name: Import install_borg playbook for borg server
+  ansible.builtin.import_playbook: lingling9000.borg.install_borg.yaml
+  vars:
+    borginstall_add_client_pkgs: false
+    target:
+      - borg-server
+
+- name: Import install_borg playbook for borg client
+  ansible.builtin.import_playbook: lingling9000.borg.install_borg.yaml
+  vars:
+    borginstall_add_client_pkgs: true
+    target:
+      - borg-client

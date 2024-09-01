@@ -1,0 +1,9 @@
+---
+- name: Prepare Arch Linux container
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Install python in Arch Linux
+      ansible.builtin.raw: |
+        pacman -Sy --noconfirm python
+      changed_when: true
