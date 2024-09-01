@@ -24,3 +24,6 @@
         owner: backup-app3
     target:
       - borg-server-archlinux
+
+- name: Import fail_conditions_borg_server playbook
+  ansible.builtin.import_playbook: playbooks/fail_conditions_borg_server.yaml
