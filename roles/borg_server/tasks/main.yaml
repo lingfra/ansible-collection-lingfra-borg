@@ -1,0 +1,24 @@
+---
+# tasks file for borg_server
+
+# ---------- Checks ----------
+
+- name: Include checks for host configuration
+  ansible.builtin.include_tasks:
+    file: checks-host-config.yaml
+  tags:
+    - checks
+    - checks-host-config
+
+# ---------- Configure ----------
+
+- name: Include tasks for configuration
+  ansible.builtin.include_tasks:
+    file: configure.yaml
+    apply:
+      tags:
+        - configure
+  tags:
+    - configure
+
+# End of file

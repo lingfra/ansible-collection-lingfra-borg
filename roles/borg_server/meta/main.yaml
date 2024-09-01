@@ -1,0 +1,12 @@
+---
+# meta file for borg_server
+
+dependencies: []
+
+galaxy_info:
+  author: lingling
+  description: Configures a central repository server for BorgBackup
+  license: The Unlicense
+  min_ansible_version: "2.15"
+
+# End of file

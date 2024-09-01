@@ -1,0 +1,36 @@
+---
+# argument specs file for borg_server
+
+argument_specs:
+  main:
+    short_description: "Main entry point for borg_server role"
+    description:
+      - "This is the main entry point of the borg_server role."
+      - "If the role is started from this entry point the full configuration of
+        a central borg repository server is executed. This includes checking
+        the host configuration and doing the actual configuration on the host."
+    options:
+      borg_server_repo_pool:
+        type: "str"
+        default: "/srv/backup"
+        description:
+          - "Directory under which the borg repositories are created."
+
+      borg_server_repo_pool_create:
+        type: "bool"
+        default: true
+        description:
+          - "Whether or not the repo pool directory should be created it is is absent."
+          - "Set to `false` if a mounted directory is expected which should not
+            be created if the mount is missing."
+
+      borg_server_repo_pool_restrict:
+        type: "bool"
+        default: true
+        description:
+          - "Whether or not the repo pool directory should be restricted."
+          - "If `true`, it restricts the repo pool directory to `0701`, so that
+            all users can cd into it, but can't see its contents. If `false`,
+            the role sets the permissions to `0755`."
+
+# End of file

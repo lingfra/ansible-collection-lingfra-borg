@@ -1,0 +1,13 @@
+---
+# tasks file for borg_server
+
+- name: "Create or modify repo pool folder"
+  ansible.builtin.file:
+    path: "{{ borg_server_repo_pool }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ '0701' if borg_server_repo_pool_restrict else '0755' }}"
+  become: true
+
+# End of file
