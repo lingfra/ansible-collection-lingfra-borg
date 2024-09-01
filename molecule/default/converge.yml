@@ -7,6 +7,8 @@
       ansible.builtin.set_fact:
         ansible_become: false
 
+# ---------- Installation ----------
+
 - name: Import install_borg playbook for borg server
   ansible.builtin.import_playbook: lingling9000.borg.install_borg.yaml
   vars:
