@@ -12,6 +12,20 @@
     - checks
     - checks-host-config
 
+- name: "Get user database"
+  ansible.builtin.getent:
+    database: passwd
+  tags:
+    - checks
+    - checks-host-config
+
+- name: "Get group database"
+  ansible.builtin.getent:
+    database: group
+  tags:
+    - checks
+    - checks-host-config
+
 # ---------- Actual Checks ----------
 
 - name: "Check repo pool existance"
@@ -26,6 +40,20 @@
         borg_server_repo_pool_create: true
     success_msg: Repo pool folder '{{ borg_server_repo_pool }}' exist.
     quiet: true
+  tags:
+    - checks
+    - checks-host-config
+
+- name: "Include host configuration checks for borg_server_repos"
+  ansible.builtin.include_tasks:
+    file: checks-host-config-repos.yaml
+    apply:
+      tags:
+        - checks
+        - checks-host-config
+  loop: "{{ borg_server_repos }}"
+  loop_control:
+    loop_var: repo
   tags:
     - checks
     - checks-host-config

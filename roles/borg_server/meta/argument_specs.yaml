@@ -33,4 +33,30 @@ argument_specs:
             all users can cd into it, but can't see its contents. If `false`,
             the role sets the permissions to `0755`."
 
+      borg_server_repos:
+        type: "list"
+        elements: "dict"
+        required: true
+        description:
+          - "List with the repositories to be created / managed on the server."
+        options:
+          name:
+            type: "str"
+            required: true
+            description:
+              - "The name of the borg repository. Must be unique."
+          group:
+            type: "str"
+            required: false
+            description:
+              - "The group of the borg repository."
+              - "Default to owner."
+          owner:
+            type: "str"
+            required: true
+            description:
+              - "The owner (user) of the borg repository."
+              - "Need to exist, have a valid login shell and a home directory,
+                which is not a borg repo directory."
+
 # End of file

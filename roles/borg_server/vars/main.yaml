@@ -1,0 +1,14 @@
+---
+# vars file for borg_server
+
+borg_server_nologin_shells:
+  - /bin/nologin
+  - /usr/bin/nologin
+  - /sbin/nologin
+  - /usr/sbin/nologin
+  - /bin/false
+  - /usr/bin/false
+  - /sbin/false
+  - /usr/sbin/false
+
+# End of file

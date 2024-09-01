@@ -4,5 +4,6 @@
 borg_server_repo_pool: /srv/backup
 borg_server_repo_pool_create: true
 borg_server_repo_pool_restrict: true
+borg_server_repos: []
 
 # End of file

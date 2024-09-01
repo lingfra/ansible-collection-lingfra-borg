@@ -1,0 +1,93 @@
+---
+# tasks file for borg_server
+
+# This task file is intendet to be included by checks-host-config.yaml.
+#
+# Following variables are expected:
+#
+#   - getent_passwd (from ansible.builtin.getent task)
+#   - getent_group (from ansible.builtin.getent task)
+#   - repo (dict)
+#       group (optional, string)
+#       name: (required, string)
+#       owner (required, string)
+
+- name: "Check that necessary user and group exist for '{{ repo.name }}'"
+  ansible.builtin.assert:
+    that:
+      # repo.owner must be an existing user
+      - repo.owner in getent_passwd.keys()
+
+      # repo.group must be an existing group
+      - (repo.group is undefined) or (repo.group in getent_group.keys())
+
+      # when repo.group is undefined, then repo.owner must be an existing group
+      - (repo.group is defined) or (repo.owner in getent_group.keys())
+    fail_msg: >
+      The configured user or group for repository '{{ repo.name }}' in list
+      'borg_server_repos' does not exist. Create it or choose another user
+      or group.
+    success_msg: All configured user and groups are present.
+    quiet: true
+
+- name: "Check user passwd config for '{{ repo.name }}'"
+  ansible.builtin.assert:
+    that:
+      # user need to have an own home directory set
+      - user_home is defined
+      - user_home is not none
+      - user_home is string
+      - user_home | length > 0
+      - user_home not in ['/root', '/']
+
+      # user need to have a login shell set
+      - user_shell is defined
+      - user_shell is not none
+      - user_shell is string
+      - user_shell | length > 0
+      - user_shell not in borg_server_nologin_shells
+    fail_msg: >
+      Configuration for user '{{ repo.owner }}' for repository
+      '{{ repo.name }}' is invalid. The user need an own home directory and a
+      login shell.
+    success_msg: "User '{{ repo.owner }}' configuration is valid."
+    quiet: true
+  vars:
+    user_home: "{{ getent_passwd[repo.owner][4] | default('') }}"
+    user_shell: "{{ getent_passwd[repo.owner][5] | default('') }}"
+
+- name: "Stat user home directory for '{{ repo.name }}'"
+  become: true
+  # For the checks in the next task the stat information from the perspective
+  # of the repo user is needed.
+  become_user: "{{ repo.owner }}"
+  ansible.builtin.stat:
+    # The 4th field is the home directory path.
+    path: "{{ getent_passwd[repo.owner][4] }}"
+  register: st_user_home
+
+- name: "Check user home directory configuration for '{{ repo.name }}'"
+  ansible.builtin.assert:
+    that:
+      - user_home.exists
+      - user_home.mimetype == 'inode/directory'
+      - user_home.pw_name == repo.owner
+      - user_home.readable
+      - user_home.writeable
+      - user_home.executable
+    fail_msg: >
+      Home directory for user '{{ repo.owner }}' for repository '{{ repo.name
+      }}' wrongly configured. The directory need to be owned by '{{ repo.owner
+      }}'. The user need the permissions to read, write and execute.
+    success_msg: Home directory for '{{ repo.owner }}' correctly configured.
+    quiet: true
+  vars:
+    user_home: "{{ st_user_home.stat }}"
+
+# ---------- Clean-Up ----------
+
+- name: "Nullify internal variables for repo checks"
+  ansible.builtin.set_fact:
+    st_user_home: null
+
+# End of file

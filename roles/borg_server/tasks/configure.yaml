@@ -10,4 +10,20 @@
     mode: "{{ '0701' if borg_server_repo_pool_restrict else '0755' }}"
   become: true
 
+- name: "Create or modify repository folders"
+  ansible.builtin.file:
+    path: "{{ repo_path }}"
+    state: directory
+    owner: "{{ repo_owner }}"
+    group: "{{ repo_group }}"
+    mode: "0700"
+  become: true
+  loop: "{{ borg_server_repos }}"
+  loop_control:
+    loop_var: repo
+  vars:
+    repo_group: "{{ repo.group | default(repo.owner) }}"
+    repo_owner: "{{ repo.owner }}"
+    repo_path: "{{ (borg_server_repo_pool, repo.name) | path_join }}"
+
 # End of file
