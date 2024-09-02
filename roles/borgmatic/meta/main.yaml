@@ -1,0 +1,12 @@
+---
+# meta file for borgmatic
+
+dependencies: []
+
+galaxy_info:
+  author: lingling
+  description: Install borgmatic on a client
+  license: The Unlicense
+  min_ansible_version: "2.15"
+
+# End of file

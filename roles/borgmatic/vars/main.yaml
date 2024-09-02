@@ -1,0 +1,12 @@
+---
+# vars file for borgmatic
+
+borgmatic_borg_base_dir: /var/lib/borg
+borgmatic_borg_cache_dir: /var/cache/borg
+borgmatic_borg_config_dir: /etc/borg
+borgmatic_borg_security_dir: /var/lib/borg/security
+borgmatic_borg_keys_dir: /var/lib/borg/keys
+borgmatic_borgmatic_d_dir: /etc/borgmatic.d
+borgmatic_borgmatic_dir: /etc/borgmatic
+
+# End of file

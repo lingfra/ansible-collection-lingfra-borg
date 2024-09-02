@@ -1,0 +1,17 @@
+---
+# argument specs file for borgmatic
+
+argument_specs:
+  main:
+    short_description: Main entry point for borgmatic role
+    description:
+      - Longer descriptions.
+      - Every list item is a new paragraph.
+    options:
+      borgmatic_compression:
+        type: "str"
+        default: "zstd"
+        description:
+          - "Compression to be used on the repositories."
+
+# End of file

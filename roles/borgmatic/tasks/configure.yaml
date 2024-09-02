@@ -1,0 +1,34 @@
+---
+# tasks file for borgmatic
+
+- name: "Create or modify directories"
+  ansible.builtin.file:
+    path: "{{ directory }}"
+    state: directory
+    group: root
+    mode: "0700"
+    owner: root
+  become: true
+  loop:
+    - "{{ borgmatic_borg_base_dir }}"
+    - "{{ borgmatic_borg_cache_dir }}"
+    - "{{ borgmatic_borg_config_dir }}"
+    - "{{ borgmatic_borg_security_dir }}"
+    - "{{ borgmatic_borg_keys_dir }}"
+    - "{{ borgmatic_borgmatic_d_dir }}"
+    - "{{ borgmatic_borgmatic_dir }}"
+  loop_control:
+    loop_var: directory
+
+- name: "Template borgmatic globals"
+  ansible.builtin.template:
+    src: globals.yaml.j2
+    dest: "/etc/borgmatic/globals.yaml"
+    mode: "0600"
+    owner: root
+    group: root
+  become: true
+
+# ---------- Clean-Up ----------
+
+# End of file

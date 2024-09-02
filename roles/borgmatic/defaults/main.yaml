@@ -1,0 +1,6 @@
+---
+# defaults file for borgmatic
+
+borgmatic_compression: zstd
+
+# End of file
