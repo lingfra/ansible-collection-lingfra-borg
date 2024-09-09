@@ -1,6 +1,8 @@
 ---
 # tasks file for borgmatic
 
+# ---------- Directories ----------
+
 - name: "Create or modify directories"
   ansible.builtin.file:
     path: "{{ directory }}"
@@ -19,6 +21,8 @@
     - "{{ borgmatic_borgmatic_dir }}"
   loop_control:
     loop_var: directory
+
+# ---------- Borgmatic Config ----------
 
 - name: "Template borgmatic globals"
   ansible.builtin.template:
