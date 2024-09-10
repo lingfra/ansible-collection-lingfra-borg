@@ -1,0 +1,70 @@
+---
+# tasks file for borgmatic
+
+- name: "Gen passwordless SSH keys on Client"
+  community.crypto.openssh_keypair:
+    path: "{{ borgmatic_ssh_priv_key_file }}"
+    type: ed25519
+  become: true
+
+# Transfer client pub key to server authorized_keys file
+
+- name: "Fetch public key from client"
+  ansible.builtin.slurp:
+    src: "{{ borgmatic_ssh_pub_key_file }}"
+  become: true
+  register: borgmatic_ssh_pub_key_slurp
+
+- name: "Decode public key from client"
+  ansible.builtin.set_fact:
+    borgmatic_ssh_pub_key_content: "{{ borgmatic_ssh_pub_key_slurp['content'] | b64decode }}"
+
+- name: "Add key to autorized_keys and restrict to repo on server"
+  become: true
+  ansible.posix.authorized_key:
+    key: "{{ borgmatic_ssh_pub_key_content }}"
+    user: "{{ borgmatic_server.user }}"
+    key_options: command="borg serve --restrict-to-repository {{ borgmatic_server.repo }}",restrict
+    exclusive: true
+  delegate_to: "{{ borgmatic_server.hostname }}"
+
+# Transfer server pub host key to client known hosts file
+
+- name: "Fetch public ssh host key from server"
+  ansible.builtin.slurp:
+    src: /etc/ssh/ssh_host_ed25519_key.pub
+  become: true
+  register: borgmatic_server_ssh_host_pub_key_slurp
+  delegate_to: "{{ borgmatic_server.hostname }}"
+  run_once: true
+
+- name: "Decode public ssh host key from server"
+  ansible.builtin.set_fact:
+    # The content is splitted to get type, key and comment as single fields.
+    borgmatic_server_ssh_host_pub_key_content: "{{ borgmatic_server_ssh_host_pub_key_slurp['content'] | b64decode | split(' ') }}"
+  run_once: true
+
+- name: "Add ssh host key from server to custom known_hosts on client"
+  become: true
+  ansible.builtin.known_hosts:
+    path: "{{ borgmatic_ssh_known_hosts_file }}"
+    name: "{{ borgmatic_server.hostname }}"
+    # content[0] = type, content[1] = key
+    key: "{{ borgmatic_server.hostname }} {{ borgmatic_server_ssh_host_pub_key_content[0] }} {{ borgmatic_server_ssh_host_pub_key_content[1] }}"
+    state: present
+
+- name: "Set permissions for ssh files on client"
+  ansible.builtin.file:
+    path: "{{ path }}"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  loop:
+    - "{{ borgmatic_ssh_known_hosts_file }}"
+    - "{{ borgmatic_ssh_priv_key_file }}"
+    - "{{ borgmatic_ssh_pub_key_file }}"
+  loop_control:
+    loop_var: path
+
+# End of file
