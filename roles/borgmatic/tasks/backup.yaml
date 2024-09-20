@@ -1,0 +1,14 @@
+---
+# tasks file for borgmatic
+
+# ---------- Configuration ----------
+
+- name: "Include tasks server.yaml for '{{ backup.name }}'"
+  ansible.builtin.include_tasks:
+    file: server.yaml
+  loop: "{{ backup.servers }}"
+  loop_control:
+    loop_var: server
+    label: "{{ server.hostname | default('N/A') ~ ' for ' ~ backup.name }}"
+
+# End of file

@@ -14,26 +14,41 @@ argument_specs:
         description:
           - "Compression to be used on the repositories."
 
-      borgmatic_server:
-        type: "dict"
+      borgmatic_backups:
+        type: "list"
+        elements: "dict"
         required: true
         options:
-          hostname:
+          name:
             type: "str"
             required: true
-          repos:
+          passphrase:
+            type: "str"
+            required: false
+          source_directories:
             type: "list"
-            elements: dict
+            elements: "str"
             required: true
+          servers:
+            type: "list"
+            elements: "dict"
             options:
-              location:
+              hostname:
                 type: "str"
                 required: true
-              removable:
-                type: "bool"
-                default: false
-          user:
-            type: "str"
-            required: true
+              repos:
+                type: "list"
+                elements: dict
+                required: true
+                options:
+                  location:
+                    type: "str"
+                    required: true
+                  removable:
+                    type: "bool"
+                    default: false
+              user:
+                type: "str"
+                required: true
 
 # End of file

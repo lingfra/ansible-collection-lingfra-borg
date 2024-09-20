@@ -54,18 +54,13 @@
     group: root
   become: true
 
-- name: "Template borgmatic repository configurations"
-  ansible.builtin.template:
-    src: config.yaml.j2
-    dest: "{{ repo_file_path }}"
-    mode: "0600"
-    owner: root
-    group: root
-  loop: "{{ borgmatic_server.repos }}"
+- name: "Include tasks backup.yaml"
+  ansible.builtin.include_tasks:
+    file: backup.yaml
+  loop: "{{ borgmatic_backups }}"
   loop_control:
-    loop_var: repo
-  vars:
-    repo_file_path: "{{ (borgmatic_borgmatic_d_dir, (repo.location | replace('/', '_')) ~ '.yaml')  | path_join }}"
+    loop_var: backup
+    label: "{{ backup.name | default('N/A') }}"
 
 # ---------- Clean-Up ----------
 

@@ -1,6 +1,26 @@
 ---
+# ##############################################################################
+#
+# {{ ansible_managed }}
+#
+# {{ borgmatic_repo_config_path }}
+#
+# See following resources for more information on borgmatic and borg:
+#
+#   - https://torsion.org/borgmatic/
+#   - https://borgbackup.readthedocs.io/en/stable/
+#
+# ##############################################################################
+
 <<: !include /etc/borgmatic/globals.yaml
 
+source_directories:
+{% for source_directory in borgmatic_repo_source_directories %}
+  - {{ source_directory }}
+{% endfor %}
+
 repositories:
-  - path: {{ repo.location }}
-    label: {{ repo.location | replace('/', '_') }}
+  - path: {{ borgmatic_repo_full_path }}
+    label: {{ borgmatic_repo_label }}
+
+encryption_passphrase: {{ borgmatic_repo_passphrase }}

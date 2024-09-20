@@ -1,0 +1,44 @@
+---
+# tasks file for borgmatic
+
+# ---------- Preparations ----------
+
+- name: "Set internal variables for {{ repo_loop_label }}"
+  ansible.builtin.set_fact:
+    borgmatic_repo_full_path: "{{ 'ssh://' ~ server.user
+      ~ '@' ~ server.hostname ~ repo.location }}"
+    borgmatic_repo_label: "{{ backup.name ~ '_'
+      ~ (server.hostname | ansible.builtin.split('.') | first | replace('.', '_'))
+      ~ '_' ~ (repo.location | trim('/') | replace('/', '-')) }}"
+    borgmatic_repo_removable: "{{ repo.removable | default(false) }}"
+    borgmatic_repo_passphrase: "{{ backup.passphrase }}"
+    borgmatic_repo_source_directories: "{{ backup.source_directories }}"
+
+- name: "Set borgmatic_repo_config_path for {{ repo_loop_label }}"
+  ansible.builtin.set_fact:
+    borgmatic_repo_config_path: "{{ (borgmatic_borgmatic_d_dir, borgmatic_repo_label ~ '.yaml')
+      | path_join }}"
+
+# ---------- Configuration ----------
+
+- name: "Template borgmatic config for {{ repo_loop_label }}"
+  ansible.builtin.template:
+    src: repo.yaml.j2
+    dest: "{{ borgmatic_repo_config_path }}"
+    mode: "0600"
+    owner: root
+    group: root
+  become: true
+
+# ---------- Clean-Up ----------
+
+- name: "Nullify internal variables for {{ repo_loop_label }}"
+  ansible.builtin.set_fact:
+    borgmatic_repo_config_path: null
+    borgmatic_repo_full_path: null
+    borgmatic_repo_label: null
+    borgmatic_repo_removable: null
+    borgmatic_repo_passphrase: null
+    borgmatic_repo_source_directories: null
+
+# End of file
