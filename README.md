@@ -6,6 +6,24 @@ across an infrastructure.
 This collection configures a central borg backup server and does the necessary
 configuration on the clients to push the backups to the server.
 
+## Installation
+
+The collection can be obtained from the Git repository. This may be desirable to
+get the latest development version. The following `requirements.yaml` entry, can
+be used to download directly from Git:
+
+```yaml
+---
+collections:
+  - name: https://codeberg.org/lingling9000/ansible-collection-lingling9000-borg
+    version: main
+    type: git
+```
+
+For more information, see the [Installing
+collections](https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html)
+section of the Ansible documentation.
+
 ## License
 
 [The Unlicense](./LICENSE)
