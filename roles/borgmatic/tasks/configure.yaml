@@ -54,6 +54,19 @@
     group: root
   become: true
 
+- name: "Template borgmatic repository configurations"
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ repo_file_path }}"
+    mode: "0600"
+    owner: root
+    group: root
+  loop: "{{ borgmatic_server.repos }}"
+  loop_control:
+    loop_var: repo
+  vars:
+    repo_file_path: "{{ (borgmatic_borgmatic_d_dir, (repo.location | replace('/', '_')) ~ '.yaml')  | path_join }}"
+
 # ---------- Clean-Up ----------
 
 - name: "Nullify internal variables"

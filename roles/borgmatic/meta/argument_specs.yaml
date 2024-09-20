@@ -21,9 +21,17 @@ argument_specs:
           hostname:
             type: "str"
             required: true
-          repo:
-            type: "str"
+          repos:
+            type: "list"
+            elements: dict
             required: true
+            options:
+              location:
+                type: "str"
+                required: true
+              removable:
+                type: "bool"
+                default: false
           user:
             type: "str"
             required: true

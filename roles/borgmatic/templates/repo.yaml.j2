@@ -1,0 +1,6 @@
+---
+<<: !include /etc/borgmatic/globals.yaml
+
+repositories:
+  - path: {{ repo.location }}
+    label: {{ repo.location | replace('/', '_') }}

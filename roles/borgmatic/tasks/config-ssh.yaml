@@ -24,7 +24,7 @@
   ansible.posix.authorized_key:
     key: "{{ borgmatic_ssh_pub_key_content }}"
     user: "{{ borgmatic_server.user }}"
-    key_options: command="borg serve --restrict-to-repository {{ borgmatic_server.repo }}",restrict
+    key_options: "{{ lookup('ansible.builtin.template', 'ssh-config-borg-serve.j2').split('\n') | first }}"
     exclusive: true
   delegate_to: "{{ borgmatic_server.hostname }}"
 
