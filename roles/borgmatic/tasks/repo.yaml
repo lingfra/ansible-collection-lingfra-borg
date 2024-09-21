@@ -7,6 +7,7 @@
   ansible.builtin.set_fact:
     borgmatic_repo_full_path: "{{ 'ssh://' ~ server.user
       ~ '@' ~ server.hostname ~ repo.location }}"
+    borgmatic_repo_init: "{{ repo.init | default(false) }}"
     borgmatic_repo_label: "{{ backup.name ~ '_'
       ~ (server.hostname | ansible.builtin.split('.') | first | replace('.', '_'))
       ~ '_' ~ (repo.location | trim('/') | replace('/', '-')) }}"
@@ -30,12 +31,42 @@
     group: root
   become: true
 
+# ---------- Repo Initialization ----------
+
+- name: "Create borg repository '{{ borgmatic_repo_full_path }}'"
+  ansible.builtin.command:
+    cmd: borg init -e repokey "{{ borgmatic_repo_full_path }}"
+  become: true
+  environment:
+    BORG_EXIT_CODES: modern  # Exit codes from borg 1.4
+    BORG_RSH: "ssh -i '{{ borgmatic_ssh_priv_key_file }}' -o 'UserKnownHostsFile={{ borgmatic_ssh_known_hosts_file }}'"
+    BORG_PASSPHRASE: "{{ borgmatic_repo_passphrase }}"
+
+    # directories
+    BORG_BASE_DIR: "{{ borgmatic_borg_base_dir }}"
+    BORG_CACHE_DIR: "{{ borgmatic_borg_cache_dir }}"
+    BORG_CONFIG_DIR: "{{ borgmatic_borg_config_dir }}"
+    BORG_SECURITY_DIR: "{{ borgmatic_borg_security_dir }}"
+    BORG_KEYS_DIR: "{{ borgmatic_borg_keys_dir }}"
+  register: borgmatic_cmd_borg_init_result
+  # The creation of a repository is succesfull when we get rc 0. Then a change has happened.
+  changed_when: borgmatic_cmd_borg_init_result.rc == 0
+  # Since version 1.4 borg does return exit code 10 if a repository already
+  # exists. This is enabled by BORG_EXIT_CODES=modern.
+  failed_when:
+    - borgmatic_cmd_borg_init_result.rc != 0
+    - borgmatic_cmd_borg_init_result.rc != 10
+    - borgmatic_cmd_borg_init_result.rc != 18 or not repo.removable
+  when:
+    - borgmatic_repo_init
+
 # ---------- Clean-Up ----------
 
 - name: "Nullify internal variables for {{ repo_loop_label }}"
   ansible.builtin.set_fact:
     borgmatic_repo_config_path: null
     borgmatic_repo_full_path: null
+    borgmatic_repo_init: null
     borgmatic_repo_label: null
     borgmatic_repo_removable: null
     borgmatic_repo_passphrase: null

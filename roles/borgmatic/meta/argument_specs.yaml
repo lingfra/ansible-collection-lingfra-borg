@@ -41,6 +41,9 @@ argument_specs:
                 elements: dict
                 required: true
                 options:
+                  init:
+                    type: "bool"
+                    default: false
                   location:
                     type: "str"
                     required: true
