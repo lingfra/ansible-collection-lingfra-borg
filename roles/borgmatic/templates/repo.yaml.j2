@@ -24,3 +24,8 @@ repositories:
     label: {{ borgmatic_repo_label }}
 
 encryption_passcommand: cat {{ borgmatic_backup_passphrase_file }}
+{% if borgmatic_repo_removable %}
+
+before_actions:
+  - {{ borgmatic_check_repo_availability_script_path }} "{repository}" "cat '{{ borgmatic_backup_passphrase_file }}'"
+{% endif %}

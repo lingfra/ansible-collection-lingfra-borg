@@ -19,6 +19,7 @@
     - "{{ borgmatic_borg_base_dir }}"
     - "{{ borgmatic_borg_cache_dir }}"
     - "{{ borgmatic_borg_config_dir }}"
+    - "{{ borgmatic_bin_dir }}"
     - "{{ borgmatic_borg_pass_dir }}"
     - "{{ borgmatic_borg_security_dir }}"
     - "{{ borgmatic_borg_keys_dir }}"
@@ -53,6 +54,20 @@
     mode: "0600"
     owner: root
     group: root
+  become: true
+
+- name: "Set fact borgmatic_check_repo_availability_script_path"
+  ansible.builtin.set_fact:
+    borgmatic_check_repo_availability_script_path: "{{
+      (borgmatic_bin_dir, 'check-repo-availability') | path_join }}"
+
+- name: "Template check-repo-availability script"
+  ansible.builtin.template:
+    src: check-repo-availability.sh.j2
+    dest: "{{ borgmatic_check_repo_availability_script_path }}"
+    owner: root
+    group: root
+    mode: "0500"
   become: true
 
 - name: "Include tasks backup.yaml"
