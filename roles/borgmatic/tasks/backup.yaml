@@ -1,7 +1,23 @@
 ---
 # tasks file for borgmatic
 
+# ---------- Preparations ----------
+
+- name: "Set internal variables for '{{ backup.name }}'"
+  ansible.builtin.set_fact:
+    borgmatic_backup_passphrase_file: "{{ (borgmatic_borg_pass_dir, backup.name)
+      | path_join }}"
+
 # ---------- Configuration ----------
+
+- name: "Copy passphrase to file for '{{ backup.name }}'"
+  ansible.builtin.copy:
+    content: "{{ backup.passphrase }}"
+    dest: "{{ borgmatic_backup_passphrase_file }}"
+    owner: root
+    group: root
+    mode: "0400"
+  become: true
 
 - name: "Include tasks server.yaml for '{{ backup.name }}'"
   ansible.builtin.include_tasks:
@@ -10,5 +26,11 @@
   loop_control:
     loop_var: server
     label: "{{ server.hostname | default('N/A') ~ ' for ' ~ backup.name }}"
+
+# ---------- Clean-Up ----------
+
+- name: "Nullify internal variables for '{{ backup.name }}'"
+  ansible.builtin.set_fact:
+    borgmatic_backup_passphrase_file: null
 
 # End of file

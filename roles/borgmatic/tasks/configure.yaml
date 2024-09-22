@@ -19,6 +19,7 @@
     - "{{ borgmatic_borg_base_dir }}"
     - "{{ borgmatic_borg_cache_dir }}"
     - "{{ borgmatic_borg_config_dir }}"
+    - "{{ borgmatic_borg_pass_dir }}"
     - "{{ borgmatic_borg_security_dir }}"
     - "{{ borgmatic_borg_keys_dir }}"
     - "{{ borgmatic_borgmatic_d_dir }}"

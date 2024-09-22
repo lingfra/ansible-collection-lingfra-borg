@@ -23,4 +23,4 @@ repositories:
   - path: {{ borgmatic_repo_full_path }}
     label: {{ borgmatic_repo_label }}
 
-encryption_passphrase: {{ borgmatic_repo_passphrase }}
+encryption_passcommand: cat {{ borgmatic_backup_passphrase_file }}

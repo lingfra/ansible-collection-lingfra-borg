@@ -40,7 +40,7 @@
   environment:
     BORG_EXIT_CODES: modern  # Exit codes from borg 1.4
     BORG_RSH: "ssh -i '{{ borgmatic_ssh_priv_key_file }}' -o 'UserKnownHostsFile={{ borgmatic_ssh_known_hosts_file }}'"
-    BORG_PASSPHRASE: "{{ borgmatic_repo_passphrase }}"
+    BORG_PASSCOMMAND: "cat {{ borgmatic_backup_passphrase_file }}"
 
     # directories
     BORG_BASE_DIR: "{{ borgmatic_borg_base_dir }}"
