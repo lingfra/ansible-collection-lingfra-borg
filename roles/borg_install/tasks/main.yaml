@@ -2,15 +2,15 @@
 # tasks file for borg_install
 
 - name: Include OS specific variables
-  ansible.builtin.include_vars: "{{lookup('ansible.builtin.first_found', params)}}"
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
   vars:
     params:
       files:
-        - '{{ ansible_distribution }}.yaml'
-        - '{{ ansible_os_family }}.yaml'
+        - "{{ ansible_os_family }}.yaml"
+        - "{{ ansible_distribution }}.yaml"
         - default.yaml
       paths:
-        - 'vars'
+        - "vars"
 
 # ---------- Configure ----------
 
@@ -23,10 +23,20 @@
   tags:
     - configure
 
-- name: Install borg and dependencies
-  ansible.builtin.package:
-    name: "{{ borg_install_pkg_list }}"
-    state: present
-  become: true
+- name: "Include tasks install task for {{ ansible_pkg_mgr | default('generic package manager') }}"
+  ansible.builtin.include_tasks:
+    file: "{{ lookup('ansible.builtin.first_found', params) }}"
+    apply:
+      tags:
+        - configure
+  tags:
+    - configure
+  vars:
+    params:
+      files:
+        - "pkg_{{ ansible_pkg_mgr }}.yaml"
+        - "pkg_generic.yaml"
+      paths:
+        - "tasks"
 
 # End of file
