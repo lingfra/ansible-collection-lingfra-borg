@@ -47,10 +47,14 @@
 
 # ---------- Borgmatic Config ----------
 
+- name: "Set fact borgmatic_globals_file"
+  ansible.builtin.set_fact:
+    borgmatic_globals_file: "{{ [borgmatic_borgmatic_dir, 'globals.yaml'] | path_join }}"
+
 - name: "Template borgmatic globals"
   ansible.builtin.template:
     src: globals.yaml.j2
-    dest: "/etc/borgmatic/globals.yaml"
+    dest: "{{ borgmatic_globals_file }}"
     mode: "0600"
     owner: root
     group: root
