@@ -31,12 +31,36 @@ argument_specs:
             required: false
             description:
               - "Actions to do before all backups."
+          mariadb_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "MariaDB databases to backup."
+          mongodb_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "MongoDB databases to backup."
+          mysql_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "MySQL databases to backup."
           name:
             type: "str"
             required: true
           passphrase:
             type: "str"
             required: false
+          postgresql_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "PostgreSQL databases to backup."
           source_directories:
             type: "list"
             elements: "str"
@@ -65,5 +89,11 @@ argument_specs:
               user:
                 type: "str"
                 required: true
+          sqlite_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "SQLite databases to backup."
 
 # End of file

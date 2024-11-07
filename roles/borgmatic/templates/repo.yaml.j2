@@ -12,7 +12,10 @@
 #
 # ##############################################################################
 
-<<: !include /etc/borgmatic/globals.yaml
+<<: !include 
+{% for file in borgmatic_repo_includes %}
+  - "{{ file }}"
+{% endfor %}
 
 source_directories:
 {% for source_directory in borgmatic_repo_source_directories %}
@@ -29,3 +32,13 @@ encryption_passcommand: cat {{ borgmatic_backup_passphrase_file }}
 before_actions:
   - {{ borgmatic_check_repo_availability_script_path }} "{repository}" "cat '{{ borgmatic_backup_passphrase_file }}'"
 {% endif %}
+{% set databases_configs = backup | ansible.builtin.dict2items | selectattr('key', 'ansible.builtin.search', 'databases') %}
+{% for dbms in databases_configs %}
+
+{{ dbms.key }}:
+{% for db in dbms.value %}
+  - {% for k, v in db.items() %}
+{{ '' if loop.first else '    ' }}{{ k ~ ': ' ~ v }}
+{% endfor %}
+{% endfor %}
+{% endfor %}
