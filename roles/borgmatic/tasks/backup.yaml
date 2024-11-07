@@ -5,6 +5,7 @@
 
 - name: "Set internal variables for '{{ backup.name }}'"
   ansible.builtin.set_fact:
+    borgmatic_backup_global_hooks_file: "{{ [borgmatic_borgmatic_d_dir, backup.name ~ '_' ~ 'global_hooks.yaml'] | path_join }}"
     borgmatic_backup_passphrase_file: "{{ (borgmatic_borg_pass_dir, backup.name)
       | path_join }}"
 
@@ -19,6 +20,27 @@
     mode: "0400"
   become: true
 
+- name: "Template global hooks file for '{{ backup.name }}'"
+  ansible.builtin.template:
+    src: global-hooks.yaml.j2
+    dest: "{{ borgmatic_backup_global_hooks_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  when:
+    - backup.after_everything | default(false)
+    - backup.before_everything | default(false)
+
+- name: "Remove global hooks file if empty for '{{ backup.name }}'"
+  ansible.builtin.file:
+    dest: "{{ borgmatic_backup_global_hooks_file }}"
+    state: absent
+  become: true
+  when:
+    - not (backup.after_everything | default(false))
+    - not (backup.before_everything | default(false))
+
 - name: "Include tasks server.yaml for '{{ backup.name }}'"
   ansible.builtin.include_tasks:
     file: server.yaml
@@ -31,6 +53,7 @@
 
 - name: "Nullify internal variables for '{{ backup.name }}'"
   ansible.builtin.set_fact:
+    borgmatic_backup_global_hooks_file: null
     borgmatic_backup_passphrase_file: null
 
 # End of file

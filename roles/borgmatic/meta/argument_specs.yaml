@@ -19,6 +19,18 @@ argument_specs:
         elements: "dict"
         required: true
         options:
+          after_everything:
+            type: "list"
+            elements: "str"
+            required: false
+            description:
+              - "Actions to to after all backups."
+          before_everything:
+            type: "list"
+            elements: "str"
+            required: false
+            description:
+              - "Actions to do before all backups."
           name:
             type: "str"
             required: true
