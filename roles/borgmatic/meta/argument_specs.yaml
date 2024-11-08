@@ -95,6 +95,18 @@ argument_specs:
           passphrase:
             type: "str"
             required: false
+          skip_actions:
+            type: "list"
+            elements: "str"
+            choices:
+              - "init"
+              - "compact"
+              - "create"
+              - "prune"
+              - "check"
+            required: false
+            description:
+              - "List of one or more actions to skip."
           postgresql_databases:
             type: "list"
             elements: "dict"

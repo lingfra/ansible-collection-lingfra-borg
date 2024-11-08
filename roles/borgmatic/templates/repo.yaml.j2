@@ -42,6 +42,13 @@ before_actions:
 {% endfor %}
 {% endfor %}
 {% endfor %}
+{% if backup.skip_actions | default(false) %}
+
+skip_actions:
+{% for action in backup.skip_actions %}
+  - {{ action }}
+{% endfor %}
+{% endif %}
 {% set keep_configs = backup | ansible.builtin.dict2items | selectattr('key', 'ansible.builtin.search', 'keep_') %}
 {% for keep_x in keep_configs %}
 
