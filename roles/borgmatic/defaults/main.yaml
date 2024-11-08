@@ -2,5 +2,12 @@
 # defaults file for borgmatic
 
 borgmatic_compression: zstd
+borgmatic_systemd_service_create: true
+borgmatic_systemd_service_options: {}
+borgmatic_systemd_service_start: false
+borgmatic_systemd_timer_create: true
+borgmatic_systemd_timer_enable: true
+borgmatic_systemd_timer_options:
+  OnCalendar: "*-*-* 04:00:00"
 
 # End of file

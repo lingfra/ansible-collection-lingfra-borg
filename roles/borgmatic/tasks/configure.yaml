@@ -90,6 +90,12 @@
     loop_var: backup
     label: "{{ backup.name | default('N/A') }}"
 
+# ---------- systemd ----------
+
+- name: "Include tasks systemd.yaml"
+  ansible.builtin.include_tasks:
+    file: systemd.yaml
+
 # ---------- Clean-Up ----------
 
 - name: "Nullify internal variables"

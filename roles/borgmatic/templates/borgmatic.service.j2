@@ -1,0 +1,20 @@
+{{ ansible_managed | ansible.builtin.comment }}
+
+[Unit]
+Description=borgmatic backup
+Wants=network-online.target
+After=network-online.target
+Documentation=https://torsion.org/borgmatic/
+
+[Service]
+Type=oneshot
+ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /usr/bin/borgmatic --verbosity -2 --syslog-verbosity 1
+
+{% if borgmatic_systemd_service_options %}
+# custom options
+{% for k, v in borgmatic_systemd_service_options.items() %}
+{% if (v is not none) %}
+{{ k ~ '=' ~ v }}
+{% endif %}
+{% endfor %}
+{% endif %}

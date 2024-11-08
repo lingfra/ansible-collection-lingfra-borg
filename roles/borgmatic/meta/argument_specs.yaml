@@ -147,5 +147,40 @@ argument_specs:
             required: false
             description:
               - "SQLite databases to backup."
+      borgmatic_systemd_service_create:
+        type: "bool"
+        default: true
+        description:
+          - "Whether the borgmatic.service unit should be deployed or not."
+          - "If set to `false` the borgmatic.service will be removed."
+      borgmatic_systemd_service_options:
+        type: "dict"
+        default: {}
+        description:
+          - "Options for the `[Service]` section in the borgmatic.service unit."
+      borgmatic_systemd_service_start:
+        type: "bool"
+        default: false
+        description:
+          - "Whether or not the borgmatic.service should be started or not."
+          - "Setting this to `true` will create a backup. Can be useful to create ad-hoc backups with Ansible."
+      borgmatic_systemd_timer_create:
+        type: "bool"
+        default: true
+        description:
+          - "Whether the borgmatic.timer unit should be deployed or not."
+          - "Only has an effect if `borgmatic_systemd_service_create` is also `true`."
+          - "If set to `false` the borgmatic.timer will be removed."
+      borgmatic_systemd_timer_enable:
+        type: "bool"
+        default: true
+        description:
+          - "Whether the borgmatic.timer unit should be enabled or not."
+      borgmatic_systemd_timer_options:
+        type: "dict"
+        default:
+          OnCalendar: "*-*-* 04:00:00"
+        description:
+          - "Options for the `[Timer]` section in the borgmatic.timer unit."
 
 # End of file

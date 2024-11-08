@@ -1,0 +1,75 @@
+---
+# tasks file for borgmatic
+
+- name: "Template systemd service unit"
+  ansible.builtin.template:
+    src: borgmatic.service.j2
+    dest: /etc/systemd/system/borgmatic.service
+    owner: root
+    group: root
+    mode: "0664"
+  become: true
+  notify:
+    - Systemd daemon reload
+  when:
+    - borgmatic_systemd_service_create
+
+- name: "Remove systemd service unit"
+  ansible.builtin.file:
+    path: /etc/systemd/system/borgmatic.service
+    state: absent
+  become: true
+  notify:
+    - Systemd daemon reload
+  when:
+    - not borgmatic_systemd_service_create
+
+- name: "Start systemd service unit"
+  ansible.builtin.systemd:
+    name: borgmatic.service
+    state: started
+  when:
+    - borgmatic_systemd_service_create
+    - borgmatic_systemd_service_start
+
+- name: "Template systemd timer unit"
+  ansible.builtin.template:
+    src: borgmatic.timer.j2
+    dest: /etc/systemd/system/borgmatic.timer
+    owner: root
+    group: root
+    mode: "0664"
+  become: true
+  notify:
+    - Systemd daemon reload
+  when:
+    - borgmatic_systemd_service_create
+    - borgmatic_systemd_timer_create
+
+- name: "Stat systemd timer unit"
+  ansible.builtin.stat:
+    path: /etc/systemd/system/borgmatic.timer
+  register: st_borgmatic_timer
+
+- name: "Manage systemd timer unit"
+  ansible.builtin.systemd:
+    name: borgmatic.timer
+    state: "{{ 'started' if borgmatic_systemd_timer_enable else 'stopped' }}"
+    enabled: "{{ true if borgmatic_systemd_timer_enable else false }}"
+    daemon_reload: true
+  become: true
+  when:
+    - st_borgmatic_timer.stat.exists
+
+- name: "Remove systemd timer unit"
+  ansible.builtin.file:
+    path: /etc/systemd/system/borgmatic.timer
+    state: absent
+  become: true
+  notify:
+    - Systemd daemon reload
+  when: >
+    (not borgmatic_systemd_service_create) or
+    (not borgmatic_systemd_timer_create)
+
+# End of file

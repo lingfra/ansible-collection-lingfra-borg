@@ -1,0 +1,12 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Run borgmatic backup
+
+[Timer]
+{% for k, v in borgmatic_systemd_timer_options.items() %}
+{{ k ~ '=' ~ v }}
+{% endfor %}
+
+[Install]
+WantedBy=timers.target
