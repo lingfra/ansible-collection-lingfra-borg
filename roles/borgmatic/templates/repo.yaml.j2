@@ -42,3 +42,8 @@ before_actions:
 {% endfor %}
 {% endfor %}
 {% endfor %}
+{% set keep_configs = backup | ansible.builtin.dict2items | selectattr('key', 'ansible.builtin.search', 'keep_') %}
+{% for keep_x in keep_configs %}
+
+{{ keep_x.key }}: {{ keep_x.value }}
+{% endfor %}

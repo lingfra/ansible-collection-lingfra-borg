@@ -31,6 +31,46 @@ argument_specs:
             required: false
             description:
               - "Actions to do before all backups."
+          keep_daily:
+            type: "int"
+            required: false
+            description:
+              - "Number of daily archives to keep."
+          keep_hourly:
+            type: "int"
+            required: false
+            description:
+              - "Number of hourly archives to keep."
+          keep_minutely:
+            type: "int"
+            required: false
+            description:
+              - "Number of minutely archives to keep."
+          keep_monthly:
+            type: "int"
+            required: false
+            description:
+              - "Number of monthly archives to keep."
+          keep_secondly:
+            type: "int"
+            required: false
+            description:
+              - "Number of secondly archives to keep."
+          keep_weekly:
+            type: "int"
+            required: false
+            description:
+              - "Number of weekly archives to keep."
+          keep_within:
+            type: "str"
+            required: false
+            description:
+              - "Keep all archives within this time interval."
+          keep_yearly:
+            type: "int"
+            required: false
+            description:
+              - "Number of yearly archives to keep."
           mariadb_databases:
             type: "list"
             elements: "dict"
