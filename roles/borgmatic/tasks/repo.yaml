@@ -59,6 +59,9 @@
     - borgmatic_cmd_borg_init_result.rc != 0
     - borgmatic_cmd_borg_init_result.rc != 10
     - borgmatic_cmd_borg_init_result.rc != 18 or not repo.removable
+  tags:
+    - config-init-repo
+    - costly
   when:
     - borgmatic_repo_init
 

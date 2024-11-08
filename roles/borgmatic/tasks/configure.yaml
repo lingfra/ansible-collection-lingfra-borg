@@ -28,6 +28,9 @@
     - "{{ borgmatic_ssh_dir }}"
   loop_control:
     loop_var: directory
+  tags:
+    - config-dirs
+    - costly
 
 # ---------- SSH Config ----------
 
@@ -40,6 +43,9 @@
 - name: "Include config-ssh.yaml"
   ansible.builtin.include_tasks:
     file: config-ssh.yaml
+  tags:
+    - config-ssh
+    - costly
 
 - name: "Set borgmatic_ssh_command"
   ansible.builtin.set_fact:
