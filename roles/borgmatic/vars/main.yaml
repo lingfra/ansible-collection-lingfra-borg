@@ -8,7 +8,9 @@ borgmatic_bin_dir: /etc/borg/bin
 borgmatic_borg_pass_dir: /etc/borg/pass
 borgmatic_borg_security_dir: /var/lib/borg/security
 borgmatic_borg_keys_dir: /var/lib/borg/keys
-borgmatic_borgmatic_d_dir: /etc/borgmatic.d
-borgmatic_borgmatic_dir: /etc/borgmatic
+borgmatic_borgmatic_config_d_dir: /etc/borgmatic.d
+borgmatic_borgmatic_config_dir: /etc/borgmatic
+borgmatic_borgmatic_runtime_dir: /run/borgmatic
+borgmatic_borgmatic_state_dir: /var/lib/borgmatic
 
 # End of file

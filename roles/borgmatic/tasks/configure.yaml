@@ -23,8 +23,10 @@
     - "{{ borgmatic_borg_pass_dir }}"
     - "{{ borgmatic_borg_security_dir }}"
     - "{{ borgmatic_borg_keys_dir }}"
-    - "{{ borgmatic_borgmatic_d_dir }}"
-    - "{{ borgmatic_borgmatic_dir }}"
+    - "{{ borgmatic_borgmatic_config_d_dir }}"
+    - "{{ borgmatic_borgmatic_config_dir }}"
+    - "{{ borgmatic_borgmatic_runtime_dir }}"
+    - "{{ borgmatic_borgmatic_state_dir }}"
     - "{{ borgmatic_ssh_dir }}"
   loop_control:
     loop_var: directory
@@ -55,7 +57,7 @@
 
 - name: "Set fact borgmatic_globals_file"
   ansible.builtin.set_fact:
-    borgmatic_globals_file: "{{ [borgmatic_borgmatic_dir, 'globals.yaml'] | path_join }}"
+    borgmatic_globals_file: "{{ [borgmatic_borgmatic_config_dir, 'globals.yaml'] | path_join }}"
 
 - name: "Template borgmatic globals"
   ansible.builtin.template:

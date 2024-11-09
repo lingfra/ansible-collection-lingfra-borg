@@ -5,7 +5,7 @@
 
 - name: "Set internal variables for '{{ backup.name }}'"
   ansible.builtin.set_fact:
-    borgmatic_backup_global_hooks_file: "{{ [borgmatic_borgmatic_d_dir, backup.name ~ '_' ~ 'global_hooks.yaml'] | path_join }}"
+    borgmatic_backup_global_hooks_file: "{{ [borgmatic_borgmatic_config_d_dir, backup.name ~ '_' ~ 'global_hooks.yaml'] | path_join }}"
     borgmatic_backup_passphrase_file: "{{ (borgmatic_borg_pass_dir, backup.name)
       | path_join }}"
 
