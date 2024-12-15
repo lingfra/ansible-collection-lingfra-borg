@@ -29,6 +29,12 @@
 
 # ---------- Configure ----------
 
+- name: "Set fact borg_server_mounted_folders"
+  ansible.builtin.set_fact:
+    borg_server_mounted_folders: "{{ ansible_mounts | selectattr('mount', 'defined') | map(attribute='mount') }}"
+  tags:
+    - configure
+
 - name: "Include tasks for repo pool configuration"
   ansible.builtin.include_tasks:
     file: configure.yaml
@@ -39,6 +45,17 @@
   loop_control:
     loop_var: repo_pool
   tags:
+    - configure
+  when:
+    - ((repo_pool.required_mount in borg_server_mounted_folders) if (repo_pool.required_mount is defined) else true)
+
+# ---------- Clean-Up ----------
+
+- name: "Nullify internal variables from borg_server"
+  ansible.builtin.set_fact:
+    borg_server_mounted_folders: null
+  tags:
+    - always
     - configure
 
 # End of file

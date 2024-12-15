@@ -64,6 +64,13 @@ argument_specs:
                 description:
                   - "The owner (user) of the borg repository."
                   - "Need to exist, have a valid login shell and a home directory, which is not a borg repo directory."
+          required_mount:
+            type: "str"
+            required: false
+            description:
+              - "Path to a folder, which need to be a mount."
+              - "Without it no actions for this repo root are taken."
+              - "Useful for removable backups."
           restrict:
             type: "bool"
             required: false
