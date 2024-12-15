@@ -1,0 +1,33 @@
+---
+
+# Molecule scenario for borgmatic with vagrant driver.
+
+# ---------- Borgmatic Configuration ----------
+
+- name: "Import borgmatic playbook"
+  ansible.builtin.import_playbook: lingfra.borg.borgmatic
+  vars:
+    borgmatic_backups:
+      - name: app1
+        source_directories:
+          - /etc
+          - /root
+        exclude_patterns:
+          - /etc/passwd
+          - "'/etc/d*'"
+        passphrase: Super-Secret-Passphras3!
+        keep_daily: 14
+        keep_weekly: 12
+        keep_monthly: 24
+        servers:
+          - hostname: borg-borgmatic-server
+            user: "backup-app1"
+            repos:
+              - location: "/srv/backup/app1"
+                init: true
+                removable: false
+              - location: "/media/backup/app1"
+                init: true
+                removable: true
+    target:
+      - borg-borgmatic-client

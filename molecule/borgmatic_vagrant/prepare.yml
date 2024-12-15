@@ -1,0 +1,148 @@
+---
+
+# Molecule scenario for borgmatic with vagrant driver.
+
+- name: "Install python on Arch Linux hosts"
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: "Update pacman package cache"
+      ansible.builtin.raw:
+        pacman -Sy
+      changed_when: false
+
+    - name: "Full system upgrade"
+      ansible.builtin.raw:
+        pacman -Su --noconfirm
+      changed_when: false
+
+    - name: "Install python"
+      ansible.builtin.raw:
+        pacman -S --noconfirm python
+      changed_when: false
+
+    - name: "Reboot system"
+      ansible.builtin.reboot:
+
+    - name: "Install common sys tools"
+      community.general.pacman:
+        name:
+          - htop
+          - kitty-terminfo
+          - ncdu
+          - neovim
+          - parted
+          - rsync
+          - tldr
+          - tmux
+          - which
+        state: present
+
+# ---------- Role Requirements ----------
+
+# users need to be present
+- name: Add users on borg-borgmatic-server
+  hosts: borg-borgmatic-server
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Add users
+      ansible.builtin.user:
+        create_home: "{{ user.create_home | default(true) }}"
+        home: "{{ user.home | default(('/var/lib', user.name) | path_join) }}"
+        name: "{{ user.name }}"
+      loop: "{{ user_list }}"
+      loop_control:
+        loop_var: user
+      vars:
+        user_list:
+          - name: backup-app1
+          - name: backup-app2
+          - name: backup-app3
+
+# OpenSSH need to be installed and configured
+- name: Install OpenSSH
+  hosts: all
+  become: true
+  tasks:
+    - name: Install OpenSSH
+      community.general.pacman:
+        update_cache: true
+        name:
+          - openssh
+
+- name: Configure OpenSSH server
+  hosts: borg-borgmatic-server
+  become: true
+  tasks:
+    - name: Copy /etc/ssh/sshd_config
+      ansible.builtin.copy:
+        content: |
+          AuthenticationMethods publickey
+          PermitEmptyPasswords no
+          PermitRootLogin no
+          PubkeyAuthentication yes
+          PasswordAuthentication no
+          UsePAM yes
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Generate new SSH host keys
+      ansible.builtin.command: /usr/bin/ssh-keygen -A
+      changed_when: true
+
+    - name: Start and enable sshd service
+      ansible.builtin.systemd:
+        name: sshd.service
+        state: started
+        enabled: true
+
+# ---------- Borg Installation ----------
+
+- name: Import install_borg playbook for borg server
+  ansible.builtin.import_playbook: lingfra.borg.borg_install
+  vars:
+    borg_install_add_client_pkgs: false
+    target:
+      - borg-borgmatic-server
+
+- name: Import install_borg playbook for borg client
+  ansible.builtin.import_playbook: lingfra.borg.borg_install
+  vars:
+    borg_install_add_client_pkgs: true
+    target:
+      - borg-borgmatic-client
+
+# ---------- Server Configuration ----------
+
+- name: Import borg_server playbook for borg server
+  ansible.builtin.import_playbook: lingfra.borg.borg_server
+  vars:
+    borg_server_repo_pools:
+      - path: /srv/backup
+        create: true
+        restrict: true
+        repos:
+          - name: app1
+            owner: backup-app1
+          - name: app2
+            owner: backup-app2
+          - name: app3
+            owner: backup-app3
+      - path: /media/backup
+        create: true
+        restrict: true
+        required_mount: /media/backup
+        repos:
+          - name: app1
+            owner: backup-app1
+          - name: app2
+            owner: backup-app2
+          - name: app3
+            owner: backup-app3
+    borg_server_repos:
+    target:
+      - borg-borgmatic-server

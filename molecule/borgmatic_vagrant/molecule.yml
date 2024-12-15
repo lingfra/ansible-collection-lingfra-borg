@@ -1,0 +1,24 @@
+---
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+    type: libvirt
+platforms:
+  - name: borg-borgmatic-client
+    box: archlinux/archlinux
+    memory: 2048
+    cpus: 2
+  - name: borg-borgmatic-server
+    box: archlinux/archlinux
+    memory: 2048
+    cpus: 2
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callbacks_enabled: ansible.posix.profile_tasks
+      stdout_callback: ansible.posix.debug
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml
