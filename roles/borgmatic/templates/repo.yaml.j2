@@ -22,6 +22,13 @@ source_directories:
   - {{ source_directory }}
 {% endfor %}
 
+{% if borgmatic_repo_exclude_patterns %}
+exclude_patterns:
+{% for exclude_pattern in borgmatic_repo_exclude_patterns %}
+  - {{ exclude_pattern }}
+{% endfor %}
+{% endif %}
+
 repositories:
   - path: {{ borgmatic_repo_full_path }}
     label: {{ borgmatic_repo_label }}

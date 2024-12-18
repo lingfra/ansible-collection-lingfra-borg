@@ -31,6 +31,12 @@ argument_specs:
             required: false
             description:
               - "Actions to do before all backups."
+          exclude_patterns:
+            type: "list"
+            elements: "str"
+            required: false
+            description:
+              - "List of borg exclude patterns (see `borg help patterns`)."
           keep_daily:
             type: "int"
             required: false

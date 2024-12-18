@@ -7,6 +7,7 @@
   ansible.builtin.set_fact:
     borgmatic_repo_full_path: "{{ 'ssh://' ~ server.user
       ~ '@' ~ server.hostname ~ repo.location }}"
+    borgmatic_repo_exclude_patterns: "{{ backup.exclude_patterns | default(none) }}"
     borgmatic_repo_includes:
       - "{{ borgmatic_globals_file }}"
     borgmatic_repo_init: "{{ repo.init | default(false) }}"
@@ -70,6 +71,7 @@
 - name: "Nullify internal variables for {{ repo_loop_label }}"
   ansible.builtin.set_fact:
     borgmatic_repo_config_path: null
+    borgmatic_repo_exclude_patterns: null
     borgmatic_repo_full_path: null
     borgmatic_repo_includes: null
     borgmatic_repo_init: null
