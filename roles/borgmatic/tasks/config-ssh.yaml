@@ -23,10 +23,13 @@
   become: true
   ansible.posix.authorized_key:
     key: "{{ borgmatic_ssh_pub_key_content }}"
-    user: "{{ borgmatic_backups[0].servers[0].user }}"
+    user: "{{ backup.servers[0].user }}"
     key_options: "{{ lookup('ansible.builtin.template', 'ssh-config-borg-serve.j2').split('\n') | first }}"
     exclusive: true
-  delegate_to: "{{ borgmatic_backups[0].servers[0].hostname }}"
+  delegate_to: "{{ backup.servers[0].hostname }}"
+  loop: "{{ borgmatic_backups }}"
+  loop_control:
+    loop_var: backup
 
 # Transfer server pub host key to client known hosts file
 
