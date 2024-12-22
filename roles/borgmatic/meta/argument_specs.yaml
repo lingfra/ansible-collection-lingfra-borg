@@ -153,11 +153,12 @@ argument_specs:
         description:
           - "Whether the borgmatic.service unit should be deployed or not."
           - "If set to `false` the borgmatic.service will be removed."
-      borgmatic_systemd_service_options:
+      borgmatic_systemd_service_options__override:
         type: "dict"
-        default: {}
+        required: false
         description:
           - "Options for the `[Service]` section in the borgmatic.service unit."
+          - "Will be combined with the default options from `borgmatic_systemd_service_options__default` specified in vars/main.yaml."
       borgmatic_systemd_service_start:
         type: "bool"
         default: false

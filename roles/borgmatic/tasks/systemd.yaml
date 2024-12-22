@@ -1,6 +1,17 @@
 ---
 # tasks file for borgmatic
 
+# ---------- Preparation ----------
+
+- name: "Set fact borgmatic_systemd_service_options"
+  ansible.builtin.set_fact:
+    borgmatic_systemd_service_options: "{{ default | ansible.builtin.combine(override) }}"
+  vars:
+    default: "{{ borgmatic_systemd_service_options__default }}"
+    override: "{{ borgmatic_systemd_service_options__override | default({}) }}"
+
+# ---------- Configure ----------
+
 - name: "Template systemd service unit"
   ansible.builtin.template:
     src: borgmatic.service.j2
@@ -71,5 +82,11 @@
   when: >
     (not borgmatic_systemd_service_create) or
     (not borgmatic_systemd_timer_create)
+
+# ---------- Clean-Up ----------
+
+- name: "Nullify internal variables from systemd.yaml"
+  ansible.builtin.set_fact:
+    borgmatic_systemd_service_options: null
 
 # End of file
