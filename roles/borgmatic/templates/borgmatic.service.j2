@@ -8,7 +8,7 @@ Documentation=https://torsion.org/borgmatic/
 
 [Service]
 Type=oneshot
-ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /usr/bin/borgmatic --verbosity -2 --syslog-verbosity 1
+ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /usr/bin/borgmatic --verbosity -2 --syslog-verbosity 1 -c {{ borgmatic_backup_config_dir }}
 
 {% if borgmatic_systemd_service_options %}
 # custom options

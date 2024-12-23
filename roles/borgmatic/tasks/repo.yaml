@@ -20,7 +20,7 @@
 
 - name: "Set borgmatic_repo_config_path for {{ repo_loop_label }}"
   ansible.builtin.set_fact:
-    borgmatic_repo_config_path: "{{ (borgmatic_borgmatic_config_d_dir, borgmatic_repo_label ~ '.yaml')
+    borgmatic_repo_config_path: "{{ (borgmatic_backup_config_dir, borgmatic_repo_label ~ '.yaml')
       | path_join }}"
 
 # ---------- Configuration ----------

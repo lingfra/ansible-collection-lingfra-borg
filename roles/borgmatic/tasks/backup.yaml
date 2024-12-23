@@ -5,11 +5,21 @@
 
 - name: "Set internal variables for '{{ backup.name }}'"
   ansible.builtin.set_fact:
-    borgmatic_backup_global_hooks_file: "{{ [borgmatic_borgmatic_config_d_dir, backup.name ~ '_' ~ 'global_hooks.yaml'] | path_join }}"
+    borgmatic_backup_config_dir: "{{ (borgmatic_borgmatic_config_d_dir, backup.name) | path_join }}"
+    borgmatic_backup_global_hooks_file: "{{ [borgmatic_borgmatic_config_d_dir, backup.name, backup.name ~ '_' ~ 'global_hooks.yaml'] | path_join }}"
     borgmatic_backup_passphrase_file: "{{ (borgmatic_borg_pass_dir, backup.name)
       | path_join }}"
 
 # ---------- Configuration ----------
+
+- name: "Create config directory for '{{ backup.name }}'"
+  ansible.builtin.file:
+    path: "{{ borgmatic_backup_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
 
 - name: "Copy passphrase to file for '{{ backup.name }}'"
   ansible.builtin.copy:
@@ -48,6 +58,15 @@
   loop_control:
     loop_var: server
     label: "{{ server.hostname | default('N/A') ~ ' for ' ~ backup.name }}"
+
+# ---------- systemd ----------
+
+- name: "Include tasks systemd.yaml for '{{ backup.name }}'"
+  ansible.builtin.include_tasks:
+    file: systemd.yaml
+  vars:
+    systemd_service_name: "{{ 'borgmatic-' ~ backup.name ~ '.service' }}"
+    systemd_timer_name: "{{ 'borgmatic-' ~ backup.name ~ '.timer' }}"
 
 # ---------- Clean-Up ----------
 
