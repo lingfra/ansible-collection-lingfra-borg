@@ -113,6 +113,12 @@ argument_specs:
             required: false
             description:
               - "List of one or more actions to skip."
+          systemd_service_options_override:
+            type: "dict"
+            required: false
+            description:
+              - "Override options for the systemd unit."
+              - "Has higher precedence than `borgmatic_systemd_service_options__override`."
           postgresql_databases:
             type: "list"
             elements: "dict"

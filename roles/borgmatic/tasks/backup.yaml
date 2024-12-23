@@ -67,6 +67,7 @@
   vars:
     systemd_service_name: "{{ 'borgmatic-' ~ backup.name ~ '.service' }}"
     systemd_timer_name: "{{ 'borgmatic-' ~ backup.name ~ '.timer' }}"
+    systemd_options_override_local: "{{ backup.systemd_service_options_override | default({}) }}"
 
 # ---------- Clean-Up ----------
 

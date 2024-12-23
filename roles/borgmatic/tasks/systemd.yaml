@@ -5,15 +5,17 @@
 #
 #   - systemd_service_name
 #   - systemd_timer_name
+#   - systemd_options_override_local
 
 # ---------- Preparation ----------
 
 - name: "Set fact borgmatic_systemd_service_options"
   ansible.builtin.set_fact:
-    borgmatic_systemd_service_options: "{{ default | ansible.builtin.combine(override) }}"
+    borgmatic_systemd_service_options: "{{ default | ansible.builtin.combine(override_global, override_local) }}"
   vars:
     default: "{{ borgmatic_systemd_service_options__default }}"
-    override: "{{ borgmatic_systemd_service_options__override | default({}) }}"
+    override_global: "{{ borgmatic_systemd_service_options__override | default({}) }}"
+    override_local: "{{ systemd_options_override_local }}"
 
 # ---------- Configure ----------
 
