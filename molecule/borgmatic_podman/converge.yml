@@ -1,0 +1,30 @@
+---
+- name: "Set playbook variables"
+  hosts: all
+  tasks:
+    # Connection to podman container is already root and sudo is not available.
+    - name: Set ansible_become to false
+      ansible.builtin.set_fact:
+        ansible_become: false
+
+- name: "Import borgmatic playbook"
+  ansible.builtin.import_playbook: lingfra.borg.borgmatic
+  vars:
+    borgmatic_backups:
+      - name: app1
+        source_directories:
+          - /etc
+          - /root
+        passphrase: Super-Secret-Passphras3!
+        servers:
+          - hostname: borg-borgmatic-server
+            user: "backup-app1"
+            repos:
+              - location: "/srv/backup/app1"
+                init: true
+                removable: false
+              - location: "/media/backup/app1"
+                init: true
+                removable: true
+    target:
+      - borg-borgmatic-client
