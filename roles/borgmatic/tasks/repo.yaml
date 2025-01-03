@@ -5,15 +5,15 @@
 
 - name: "Set internal variables for {{ repo_loop_label }}"
   ansible.builtin.set_fact:
-    borgmatic_repo_full_path: "{{ 'ssh://' ~ server.user
-      ~ '@' ~ server.hostname ~ repo.location }}"
+    borgmatic_repo_full_path: "{{ 'ssh://' ~ repo.user
+      ~ '@' ~ repo.hostname ~ repo.path }}"
     borgmatic_repo_exclude_patterns: "{{ backup.exclude_patterns | default(none) }}"
     borgmatic_repo_includes:
       - "{{ borgmatic_globals_file }}"
     borgmatic_repo_init: "{{ repo.init | default(false) }}"
     borgmatic_repo_label: "{{ backup.name ~ '_'
-      ~ (server.hostname | ansible.builtin.split('.') | first | replace('.', '_'))
-      ~ '_' ~ (repo.location | trim('/') | replace('/', '-')) }}"
+      ~ (repo.hostname | ansible.builtin.split('.') | first | replace('.', '_'))
+      ~ '_' ~ (repo.path | trim('/') | replace('/', '-')) }}"
     borgmatic_repo_removable: "{{ repo.removable | default(false) }}"
     borgmatic_repo_passphrase: "{{ backup.passphrase }}"
     borgmatic_repo_source_directories: "{{ backup.source_directories }}"

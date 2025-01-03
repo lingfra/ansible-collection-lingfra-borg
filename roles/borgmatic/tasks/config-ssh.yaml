@@ -1,35 +1,32 @@
 ---
 # tasks file for borgmatic
+#
+# This file expects the following variables:
+#
+#   servers (type: dict): {
+#     "server_name_as_string": {
+#       "user_name_as_string": [
+#           "path",
+#           "path",
+#           ...
+#         ]
+#     }
+#   }
+#   server (type: str): used as key for 'servers' dict.
 
-- name: "Gen passwordless SSH keys on Client"
-  community.crypto.openssh_keypair:
-    path: "{{ borgmatic_ssh_priv_key_file }}"
-    type: ed25519
-  become: true
-
-# Transfer client pub key to server authorized_keys file
-
-- name: "Fetch public key from client"
-  ansible.builtin.slurp:
-    src: "{{ borgmatic_ssh_pub_key_file }}"
-  become: true
-  register: borgmatic_ssh_pub_key_slurp
-
-- name: "Decode public key from client"
-  ansible.builtin.set_fact:
-    borgmatic_ssh_pub_key_content: "{{ borgmatic_ssh_pub_key_slurp['content'] | b64decode }}"
-
-- name: "Add key to autorized_keys and restrict to repo on server"
+- name: "Add client key to autorized_keys and restrict to repo paths on server"
   become: true
   ansible.posix.authorized_key:
     key: "{{ borgmatic_ssh_pub_key_content }}"
-    user: "{{ backup.servers[0].user }}"
+    user: "{{ user }}"
     key_options: "{{ lookup('ansible.builtin.template', 'ssh-config-borg-serve.j2').split('\n') | first }}"
     exclusive: true
-  delegate_to: "{{ backup.servers[0].hostname }}"
-  loop: "{{ borgmatic_backups }}"
+  delegate_to: "{{ server }}"
+  loop: "{{ servers[server].keys() }}"
   loop_control:
-    loop_var: backup
+    loop_var: user
+  vars:
+    paths: "{{ servers[server][user] }}"
 
 # Transfer server pub host key to client known hosts file
 
@@ -38,7 +35,7 @@
     src: /etc/ssh/ssh_host_ed25519_key.pub
   become: true
   register: borgmatic_server_ssh_host_pub_key_slurp
-  delegate_to: "{{ borgmatic_backups[0].servers[0].hostname }}"
+  delegate_to: "{{ server }}"
   run_once: true
 
 - name: "Decode public ssh host key from server"
@@ -51,23 +48,9 @@
   become: true
   ansible.builtin.known_hosts:
     path: "{{ borgmatic_ssh_known_hosts_file }}"
-    name: "{{ borgmatic_backups[0].servers[0].hostname }}"
+    name: "{{ server }}"
     # content[0] = type, content[1] = key
-    key: "{{ borgmatic_backups[0].servers[0].hostname }} {{ borgmatic_server_ssh_host_pub_key_content[0] }} {{ borgmatic_server_ssh_host_pub_key_content[1] }}"
+    key: "{{ server }} {{ borgmatic_server_ssh_host_pub_key_content[0] }} {{ borgmatic_server_ssh_host_pub_key_content[1] }}"
     state: present
-
-- name: "Set permissions for ssh files on client"
-  ansible.builtin.file:
-    path: "{{ path }}"
-    owner: root
-    group: root
-    mode: "0600"
-  become: true
-  loop:
-    - "{{ borgmatic_ssh_known_hosts_file }}"
-    - "{{ borgmatic_ssh_priv_key_file }}"
-    - "{{ borgmatic_ssh_pub_key_file }}"
-  loop_control:
-    loop_var: path
 
 # End of file

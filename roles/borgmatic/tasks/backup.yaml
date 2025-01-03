@@ -51,13 +51,15 @@
     - not (backup.after_everything | default(false))
     - not (backup.before_everything | default(false))
 
-- name: "Include tasks server.yaml for '{{ backup.name }}'"
+- name: "Include tasks repo.yaml for '{{ backup.name }}'"
   ansible.builtin.include_tasks:
-    file: server.yaml
-  loop: "{{ backup.servers }}"
+    file: repo.yaml
+  loop: "{{ backup.repos }}"
   loop_control:
-    loop_var: server
-    label: "{{ server.hostname | default('N/A') ~ ' for ' ~ backup.name }}"
+    loop_var: repo
+    label: "{{ repo_loop_label }}"
+  vars:
+    repo_loop_label: "{{ repo.path | default('N/A') ~ ' on ' ~ repo.hostname ~ ' for ' ~ backup.name }}"
 
 # ---------- systemd ----------
 

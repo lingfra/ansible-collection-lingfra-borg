@@ -129,30 +129,27 @@ argument_specs:
             type: "list"
             elements: "str"
             required: true
-          servers:
+          repos:
             type: "list"
             elements: "dict"
+            required_together:
+              - ["hostname", "user"]
             options:
               hostname:
                 type: "str"
-                required: true
-              repos:
-                type: "list"
-                elements: dict
-                required: true
-                options:
-                  init:
-                    type: "bool"
-                    default: false
-                  location:
-                    type: "str"
-                    required: true
-                  removable:
-                    type: "bool"
-                    default: false
-              user:
+                required: false
+              init:
+                type: "bool"
+                default: false
+              path:
                 type: "str"
                 required: true
+              removable:
+                type: "bool"
+                default: false
+              user:
+                type: "str"
+                required: false
           sqlite_databases:
             type: "list"
             elements: "dict"

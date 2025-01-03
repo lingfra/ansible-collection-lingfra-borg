@@ -1,4 +1,4 @@
 #jinja2: trim_blocks: True, lstrip_blocks: False
-command="borg serve{% for repo in backup.servers[0].repos -%}
-{{ ' ' }}--restrict-to-repository {{ repo.location }}
+command="borg serve{% for path in paths -%}
+{{ ' ' }}--restrict-to-repository {{ path }}
 {%- endfor %}",restrict

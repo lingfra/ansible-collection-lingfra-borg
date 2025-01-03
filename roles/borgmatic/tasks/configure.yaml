@@ -42,12 +42,49 @@
     borgmatic_ssh_priv_key_file: "{{ (borgmatic_ssh_dir, 'id_backup_ed25519') | path_join }}"
     borgmatic_ssh_pub_key_file: "{{ (borgmatic_ssh_dir, 'id_backup_ed25519.pub') | path_join }}"
 
+- name: "Gen passwordless SSH keys on Client"
+  community.crypto.openssh_keypair:
+    path: "{{ borgmatic_ssh_priv_key_file }}"
+    type: ed25519
+  become: true
+
+# Transfer client pub key to server authorized_keys file
+
+- name: "Fetch public key from client"
+  ansible.builtin.slurp:
+    src: "{{ borgmatic_ssh_pub_key_file }}"
+  become: true
+  register: borgmatic_ssh_pub_key_slurp
+
+- name: "Decode public key from client"
+  ansible.builtin.set_fact:
+    borgmatic_ssh_pub_key_content: "{{ borgmatic_ssh_pub_key_slurp['content'] | b64decode }}"
+
 - name: "Include config-ssh.yaml"
   ansible.builtin.include_tasks:
     file: config-ssh.yaml
+  loop: "{{ (borgmatic_backups | lingfra.borg.parse_servers).keys() }}"
+  loop_control:
+    loop_var: server
   tags:
     - config-ssh
     - costly
+  vars:
+    servers: "{{ (borgmatic_backups | lingfra.borg.parse_servers) }}"
+
+- name: "Set permissions for ssh files on client"
+  ansible.builtin.file:
+    path: "{{ path }}"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  loop:
+    - "{{ borgmatic_ssh_known_hosts_file }}"
+    - "{{ borgmatic_ssh_priv_key_file }}"
+    - "{{ borgmatic_ssh_pub_key_file }}"
+  loop_control:
+    loop_var: path
 
 - name: "Set borgmatic_ssh_command"
   ansible.builtin.set_fact:

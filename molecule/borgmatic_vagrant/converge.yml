@@ -19,15 +19,35 @@
         keep_daily: 14
         keep_weekly: 12
         keep_monthly: 24
-        servers:
-          - hostname: borg-borgmatic-server
+        repos:
+          - hostname: borg-borgmatic-server01
             user: "backup-app1"
-            repos:
-              - location: "/srv/backup/app1"
-                init: true
-                removable: false
-              - location: "/media/backup/app1"
-                init: true
-                removable: true
+            path: "/srv/backup/app1"
+            init: true
+            removable: false
+          - hostname: borg-borgmatic-server01
+            user: "backup-app1"
+            path: "/media/backup/app1"
+            init: true
+            removable: true
+      - name: app2
+        source_directories:
+          - /etc
+          - /root
+        exclude_patterns:
+          - /etc/passwd
+          - "'/etc/d*'"
+        passphrase: Another-Secret-Passphras3!
+        repos:
+          - hostname: borg-borgmatic-server01
+            user: "backup-app2"
+            path: "/srv/backup/app2"
+            init: true
+            removable: false
+          - hostname: borg-borgmatic-server02
+            user: "backup-app2"
+            path: "/srv/backup/app2"
+            init: true
+            removable: false
     target:
       - borg-borgmatic-client
