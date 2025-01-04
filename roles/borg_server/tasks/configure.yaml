@@ -1,14 +1,16 @@
 ---
 # tasks file for borg_server
 
-- name: "Create or modify repo pool folder"
+- name: "Create or modify repo pool folder '{{ repo_pool.path }}'"
   ansible.builtin.file:
-    path: "{{ borg_server_repo_pool }}"
+    path: "{{ repo_pool.path }}"
     state: directory
     owner: root
     group: root
-    mode: "{{ '0701' if borg_server_repo_pool_restrict else '0755' }}"
+    mode: "{{ '0701' if restrict else '0755' }}"
   become: true
+  vars:
+    restrict: "{{ repo_pool.restrict | default(borg_server_repo_pool_restrict) }}"
 
 - name: "Create or modify repository folders"
   ansible.builtin.file:
@@ -18,12 +20,13 @@
     group: "{{ repo_group }}"
     mode: "0700"
   become: true
-  loop: "{{ borg_server_repos }}"
+  loop: "{{ repo_pool.repos }}"
   loop_control:
     loop_var: repo
+    label: "{{ repo_path }}"
   vars:
     repo_group: "{{ repo.group | default(repo.owner) }}"
     repo_owner: "{{ repo.owner }}"
-    repo_path: "{{ (borg_server_repo_pool, repo.name) | path_join }}"
+    repo_path: "{{ (repo_pool.path, repo.name) | path_join }}"
 
 # End of file

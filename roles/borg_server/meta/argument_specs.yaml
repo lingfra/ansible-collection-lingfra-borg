@@ -10,53 +10,64 @@ argument_specs:
         a central borg repository server is executed. This includes checking
         the host configuration and doing the actual configuration on the host."
     options:
-      borg_server_repo_pool:
-        type: "str"
-        default: "/srv/backup"
-        description:
-          - "Directory under which the borg repositories are created."
-
       borg_server_repo_pool_create:
         type: "bool"
         default: true
         description:
-          - "Whether or not the repo pool directory should be created it is is absent."
-          - "Set to `false` if a mounted directory is expected which should not
-            be created if the mount is missing."
+          - "Whether or not the repo pool directories should be created it is is absent."
 
       borg_server_repo_pool_restrict:
         type: "bool"
         default: true
         description:
-          - "Whether or not the repo pool directory should be restricted."
-          - "If `true`, it restricts the repo pool directory to `0701`, so that
-            all users can cd into it, but can't see its contents. If `false`,
-            the role sets the permissions to `0755`."
+          - "Whether or not the repo pool directories should be restricted."
+          - "If `true`, it restricts the repo pool directory to `0701`, so that all users can cd into it, but can't see its contents. If `false`, the role sets the permissions to `0755`."
 
-      borg_server_repos:
+      borg_server_repo_pools:
         type: "list"
         elements: "dict"
         required: true
         description:
-          - "List with the repositories to be created / managed on the server."
+          - "List of repo pool directories"
         options:
-          name:
-            type: "str"
-            required: true
-            description:
-              - "The name of the borg repository. Must be unique."
-          group:
-            type: "str"
+          create:
+            type: "bool"
             required: false
             description:
-              - "The group of the borg repository."
-              - "Default to owner."
-          owner:
+              - "Overrides [`borg_server_repo_pool_create`](#borg_server_repo_pool_create) for this repo pool."
+          path:
             type: "str"
             required: true
             description:
-              - "The owner (user) of the borg repository."
-              - "Need to exist, have a valid login shell and a home directory,
-                which is not a borg repo directory."
+              - "Directory under which the borg repositories are created."
+          repos:
+            type: "list"
+            elements: "dict"
+            required: true
+            description:
+              - "List with the repositories to be created / managed in this repo pool."
+            options:
+              name:
+                type: "str"
+                required: true
+                description:
+                  - "The name of the borg repository. Must be unique."
+              group:
+                type: "str"
+                required: false
+                description:
+                  - "The group of the borg repository."
+                  - "Default to owner."
+              owner:
+                type: "str"
+                required: true
+                description:
+                  - "The owner (user) of the borg repository."
+                  - "Need to exist, have a valid login shell and a home directory, which is not a borg repo directory."
+          restrict:
+            type: "bool"
+            required: false
+            description:
+              - "Overrides [`borg_server_repo_pool_restrict`](#borg_server_repo_pool_restrict) for this repo pool."
 
 # End of file

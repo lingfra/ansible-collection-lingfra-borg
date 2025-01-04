@@ -3,55 +3,49 @@
 
 # ---------- Gather Information for Checks ----------
 
-- name: "Stat of repo pool"
+- name: "Stat of repo pool '{{ repo_pool.path }}'"
   ansible.builtin.stat:
-    path: "{{ borg_server_repo_pool }}"
+    path: "{{ repo_pool.path }}"
   become: true    # permissions need to check protected directories
-  register: borg_server_repo_pool_result
-  tags:
-    - checks
-    - checks-host-config
-
-- name: "Get user database"
-  ansible.builtin.getent:
-    database: passwd
-  tags:
-    - checks
-    - checks-host-config
-
-- name: "Get group database"
-  ansible.builtin.getent:
-    database: group
+  register: st_repo_pool
   tags:
     - checks
     - checks-host-config
 
 # ---------- Actual Checks ----------
 
-- name: "Check repo pool existance"
+- name: "Check repo pool existance for '{{ repo_pool.path }}'"
   ansible.builtin.assert:
     that:
-      - borg_server_repo_pool_create or borg_server_repo_pool_result.stat.exists
+      - repo_pool_create or st_repo_pool.stat.exists
     fail_msg: |
-      Repo pool folder '{{ borg_server_repo_pool }}' does not exist and should not be created.
+      Repo pool folder '{{ repo_pool.path }}' does not exist and should not be created.
 
       If it is desired that this role creates the repo pool folder, then set following variable:
 
         borg_server_repo_pool_create: true
-    success_msg: Repo pool folder '{{ borg_server_repo_pool }}' exist.
+
+      for global configuration or override it with
+
+        create: true
+
+      in this list item.
+    success_msg: Repo pool folder '{{ repo_pool.path }}' exist.
     quiet: true
   tags:
     - checks
     - checks-host-config
+  vars:
+    repo_pool_create: "{{ repo_pool.create | default(borg_server_repo_pool_create) }}"
 
-- name: "Include host configuration checks for borg_server_repos"
+- name: "Include host configuration checks for repos of repo_pool '{{ repo_pool.path }}'"
   ansible.builtin.include_tasks:
     file: checks-host-config-repos.yaml
     apply:
       tags:
         - checks
         - checks-host-config
-  loop: "{{ borg_server_repos }}"
+  loop: "{{ repo_pool.repos }}"
   loop_control:
     loop_var: repo
   tags:

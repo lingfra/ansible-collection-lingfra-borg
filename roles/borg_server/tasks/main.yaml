@@ -3,21 +3,41 @@
 
 # ---------- Checks ----------
 
+- name: "Get user database"
+  ansible.builtin.getent:
+    database: passwd
+  tags:
+    - checks
+    - checks-host-config
+
+- name: "Get group database"
+  ansible.builtin.getent:
+    database: group
+  tags:
+    - checks
+    - checks-host-config
+
 - name: Include checks for host configuration
   ansible.builtin.include_tasks:
     file: checks-host-config.yaml
   tags:
     - checks
     - checks-host-config
+  loop: "{{ borg_server_repo_pools }}"
+  loop_control:
+    loop_var: repo_pool
 
 # ---------- Configure ----------
 
-- name: Include tasks for configuration
+- name: "Include tasks for repo pool configuration"
   ansible.builtin.include_tasks:
     file: configure.yaml
     apply:
       tags:
         - configure
+  loop: "{{ borg_server_repo_pools }}"
+  loop_control:
+    loop_var: repo_pool
   tags:
     - configure
 
