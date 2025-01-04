@@ -3,9 +3,13 @@
   tasks:
     - name: Test non-existing user
       vars:
-        borg_server_repos:
-          - name: app23
-            owner: backup-app23   # non existing user
+        borg_server_repo_pools:
+          - path: /srv/backup
+            create: true
+            restrict: true
+            repos:
+              - name: non-existing1
+                owner: backup-non-existing1
       block:
         - name: Include role lingfra.borg.borg_server
           ansible.builtin.include_role:

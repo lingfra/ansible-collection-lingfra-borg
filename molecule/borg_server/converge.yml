@@ -14,14 +14,30 @@
 - name: Import borg_server playbook for borg server
   ansible.builtin.import_playbook: lingfra.borg.borg_server
   vars:
-    borg_server_repos:
-      - name: app1
-        owner: backup-app1
-      - name: app2
-        owner: backup-app2
-        group: backup-app2
-      - name: confusing-but-valid-name
-        owner: backup-app3
+    borg_server_repo_pools:
+      - path: /srv/borg-repo-pool
+        create: true
+        restrict: true
+        repos:
+          - name: app1
+            owner: backup-app1
+          - name: app2
+            owner: backup-app2
+          - name: app3
+            owner: backup-app3
+            group: backup-app3
+
+      - path: /srv/borg-repo-pool-existing
+        create: false
+        restrict: false
+        repos:
+          - name: app1
+            owner: backup-app1
+          - name: app2
+            owner: backup-app2
+            group: backup-app2
+          - name: app3
+            owner: backup-app3
     target:
       - borg-server-archlinux
 

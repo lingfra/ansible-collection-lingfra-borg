@@ -46,3 +46,11 @@
           - name: backup-app1
           - name: backup-app2
           - name: backup-app3
+
+    - name: Add folder /srv/borg-repo-pool-existing
+      ansible.builtin.file:
+        path: /srv/borg-repo-pool-existing
+        state: directory
+        owner: root
+        group: root
+        mode: "0744"
