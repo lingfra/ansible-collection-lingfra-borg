@@ -5,6 +5,8 @@ platforms:
   - name: borg-server-archlinux
     image: archlinux:latest
     pre_build_image: true
+    volumes:
+      - "backup:/media/available:rw"
 provisioner:
   name: ansible
   config_options:
