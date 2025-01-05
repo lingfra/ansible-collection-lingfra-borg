@@ -5,6 +5,7 @@
   lingfra.borg.validate_repo_pool:
     create: "{{ repo_pool.create | default(borg_server_repo_pool_create) }}"
     path: "{{ repo_pool.path }}"
+    required_mount: "{{ repo_pool.required_mount | default(omit) }}"
   tags:
     - checks
     - checks-host-config
