@@ -3,9 +3,9 @@
   hosts: "{{ target | default('all') }}"
   gather_facts: true
   tasks:
-    - name: Include role lingling9000.borg.borginstall
+    - name: Include role lingling9000.borg.borg_install
       ansible.builtin.include_role:
-        name: lingling9000.borg.borginstall
+        name: lingling9000.borg.borg_install
         apply:
           tags:
-            - borginstall
+            - borg_install
