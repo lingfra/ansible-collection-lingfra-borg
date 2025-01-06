@@ -1,5 +1,5 @@
 ---
-# tasks file for borginstall
+# tasks file for borg_install
 
 - name: Include OS specific variables
   ansible.builtin.include_vars: "{{lookup('ansible.builtin.first_found', params)}}"
@@ -16,16 +16,16 @@
 
 - name: Compose package list
   ansible.builtin.set_fact:
-    borginstall_pkg_list: "{{
-        borginstall_pkg_list_all
-        + (borginstall_add_client_pkgs | ternary(borginstall_pkg_list_client, []))
+    borg_install_pkg_list: "{{
+        borg_install_pkg_list_all
+        + (borg_install_add_client_pkgs | ternary(borg_install_pkg_list_client, []))
       }}"
   tags:
     - configure
 
 - name: Install borg and dependencies
   ansible.builtin.package:
-    name: "{{ borginstall_pkg_list }}"
+    name: "{{ borg_install_pkg_list }}"
     state: present
   become: true
 

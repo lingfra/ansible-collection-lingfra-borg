@@ -1,5 +1,5 @@
 ---
-# meta file for borginstall
+# meta file for borg_install
 
 dependencies: []
 
@@ -8,7 +8,7 @@ galaxy_info:
   description: Installs borg backup.
   license: The Unlicense
   namespace: lingling9000
-  role_name: borginstall
+  role_name: borg_install
 
   min_ansible_version: "2.8"
 

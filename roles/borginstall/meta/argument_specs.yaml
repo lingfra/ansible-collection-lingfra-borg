@@ -1,11 +1,11 @@
 ---
-# arguments specs file for borginstall
+# arguments specs file for borg_install
 
 argument_specs:
   main:
-    short_description: Main entry point for borginstall role
+    short_description: Main entry point for borg_install role
     options:
-      borginstall_add_client_pkgs:
+      borg_install_add_client_pkgs:
         type: "bool"
         default: false
         description:

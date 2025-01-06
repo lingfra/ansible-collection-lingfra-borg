@@ -12,13 +12,13 @@
 - name: Import install_borg playbook for borg server
   ansible.builtin.import_playbook: lingling9000.borg.install_borg.yaml
   vars:
-    borginstall_add_client_pkgs: false
+    borg_install_add_client_pkgs: false
     target:
       - borg-server
 
 - name: Import install_borg playbook for borg client
   ansible.builtin.import_playbook: lingling9000.borg.install_borg.yaml
   vars:
-    borginstall_add_client_pkgs: true
+    borg_install_add_client_pkgs: true
     target:
       - borg-client
