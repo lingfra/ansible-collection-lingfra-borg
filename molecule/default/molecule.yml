@@ -10,6 +10,10 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      callbacks_enabled: ansible.posix.profile_tasks
+      stdout_callback: ansible.posix.debug
   playbooks:
     prepare: prepare.yml
     converge: converge.yml
