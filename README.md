@@ -1,4 +1,4 @@
-# Ansible Collection - lingling9000.borg
+# Ansible Collection - lingfra.borg
 
 An Ansible collection for installing and configuring the borg backup utility
 across an infrastructure.
@@ -15,7 +15,7 @@ be used to download directly from Git:
 ```yaml
 ---
 collections:
-  - name: https://codeberg.org/lingling9000/ansible-collection-lingling9000-borg
+  - name: https://codeberg.org/lingfra/ansible-collection-lingfra-borg
     version: main
     type: git
 ```
