@@ -12,11 +12,15 @@ configuration on the clients to push the backups to the server.
 
 - [borg_install](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/roles/borg_install):
 Installs borg backup packages.
+- [borg_server](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/roles/borg_server):
+Configures a central repository server for borg backup.
 
 ### Playbooks
 
 - [borg_install](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/playbooks/borg_install.yaml):
 Installs borg backup packages.
+- [borg_server](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/playbooks/borg_server.yaml):
+Configures central borg repository server.
 
 ## Installation
 
