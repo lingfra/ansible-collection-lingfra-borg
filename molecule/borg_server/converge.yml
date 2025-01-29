@@ -1,0 +1,107 @@
+---
+- name: Set playbook variables
+  hosts: all
+  tags:
+    - always
+  tasks:
+    # Connection to podman container is already root and sudo is not available.
+    - name: Set ansible_become to false
+      ansible.builtin.set_fact:
+        ansible_become: false
+
+# ---------- Server Configuration ----------
+
+- name: Import borg_server playbook for borg server
+  ansible.builtin.import_playbook: lingfra.borg.borg_server
+  vars:
+    borg_server_repo_pools:
+      - path: /srv/borg-repo-pool
+        create: true
+        restrict: true
+        repos:
+          - name: app1
+            owner: backup-app1
+          - name: app2
+            owner: backup-app2
+          - name: app3
+            owner: backup-app3
+            group: backup-app3
+
+      - path: /srv/borg-repo-pool-existing
+        create: false
+        restrict: false
+        repos:
+          - name: app1
+            owner: backup-app1
+          - name: app2
+            owner: backup-app2
+            group: backup-app2
+          - name: app3
+            owner: backup-app3
+
+      - path: /media/available/backup
+        required_mount: /media/available
+        repos:
+          - name: app1
+            owner: backup-app1
+            group: backup-app1
+          - name: app3
+            owner: backup-app3
+
+      # create should be ignored when the required mount isn't available
+      - path: /media/unavailable-create-true/backup
+        create: true
+        required_mount: /media/unavailable-create
+        repos:
+          - name: app1
+            owner: backup-app1
+            group: backup-app1
+          - name: app3
+            owner: backup-app3
+
+      - path: /media/unavailable-create-false/backup
+        create: false
+        required_mount: /media/unavailable-create-false
+        repos:
+          - name: app1
+            owner: backup-app1
+            group: backup-app1
+          - name: app3
+            owner: backup-app3
+
+      - path: /media/unavailable-create-undefined/backup
+        create: true
+        required_mount: /media/unavailable-create
+        repos:
+          - name: app1
+            owner: backup-app1
+            group: backup-app1
+          - name: app3
+            owner: backup-app3
+
+      # this folder exists, but is not mounted, should consequently be ignored
+      # and not causing issues
+      - path: /media/existing-folder-create-true/backup
+        create: true
+        required_mount: /media/existing-folder-create-true
+        repos:
+          - name: app1
+            owner: backup-app1
+
+      - path: /media/existing-folder-create-false/backup
+        create: false
+        required_mount: /media/existing-folder-create-false
+        repos:
+          - name: app1
+            owner: backup-app1
+
+      - path: /media/existing-folder-create-undefined/backup
+        required_mount: /media/existing-folder-create-undefined
+        repos:
+          - name: app1
+            owner: backup-app1
+    target:
+      - borg-server-archlinux
+
+- name: Import fail_conditions_borg_server playbook
+  ansible.builtin.import_playbook: playbooks/fail_conditions_borg_server.yaml

@@ -1,0 +1,34 @@
+- name: Fail condition tests for borg_server
+  hosts: borg-server-archlinux
+  tasks:
+    - name: Test non-existing user
+      vars:
+        borg_server_repo_pools:
+          - path: /srv/backup
+            create: true
+            restrict: true
+            repos:
+              - name: non-existing1
+                owner: backup-non-existing1
+      block:
+        - name: Include role lingfra.borg.borg_server
+          ansible.builtin.include_role:
+            name: lingfra.borg.borg_server
+          register: borg_server_test_non_existing_user
+
+        - name: Fail if previous task not failed
+          ansible.builtin.fail:
+            msg: "Task run with non-existing user."
+          register: borg_server_success_non_existing_user
+
+      rescue:
+        - name: Assert that fail condition worked
+          ansible.builtin.assert:
+            that:
+              - borg_server_test_non_existing_user is defined
+              - borg_server_success_non_existing_user is not defined
+            fail_msg: >
+              The 'non-existing user' failure condition for the role
+              'lingfra.borg.borg_server' was not triggered.
+            success_msg: >
+              Fail condition 'non-existing user' successful triggered.

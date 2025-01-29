@@ -1,0 +1,61 @@
+---
+# tasks file for borg_server
+
+# ---------- Checks ----------
+
+- name: "Get user database"
+  ansible.builtin.getent:
+    database: passwd
+  tags:
+    - checks
+    - checks-host-config
+
+- name: "Get group database"
+  ansible.builtin.getent:
+    database: group
+  tags:
+    - checks
+    - checks-host-config
+
+- name: Include checks for host configuration
+  ansible.builtin.include_tasks:
+    file: checks-host-config.yaml
+  tags:
+    - checks
+    - checks-host-config
+  loop: "{{ borg_server_repo_pools }}"
+  loop_control:
+    loop_var: repo_pool
+
+# ---------- Configure ----------
+
+- name: "Set fact borg_server_mounted_folders"
+  ansible.builtin.set_fact:
+    borg_server_mounted_folders: "{{ ansible_mounts | selectattr('mount', 'defined') | map(attribute='mount') }}"
+  tags:
+    - configure
+
+- name: "Include tasks for repo pool configuration"
+  ansible.builtin.include_tasks:
+    file: configure.yaml
+    apply:
+      tags:
+        - configure
+  loop: "{{ borg_server_repo_pools }}"
+  loop_control:
+    loop_var: repo_pool
+  tags:
+    - configure
+  when:
+    - ((repo_pool.required_mount in borg_server_mounted_folders) if (repo_pool.required_mount is defined) else true)
+
+# ---------- Clean-Up ----------
+
+- name: "Nullify internal variables from borg_server"
+  ansible.builtin.set_fact:
+    borg_server_mounted_folders: null
+  tags:
+    - always
+    - configure
+
+# End of file

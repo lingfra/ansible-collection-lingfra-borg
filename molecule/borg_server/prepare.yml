@@ -1,0 +1,68 @@
+---
+- name: Make Arch Linux container Ansible compatible
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Install python in Arch Linux
+      ansible.builtin.raw: |
+        pacman -Sy --noconfirm python
+      changed_when: true
+
+- name: Set playbook variables
+  hosts: all
+  tags:
+    - always
+  tasks:
+    # Connection to podman container is already root and sudo is not available.
+    - name: Set ansible_become to false
+      ansible.builtin.set_fact:
+        ansible_become: false
+
+# ---------- Borg Installation ----------
+
+- name: Import install_borg playbook for borg server
+  ansible.builtin.import_playbook: lingfra.borg.borg_install
+  vars:
+    borg_install_add_client_pkgs: false
+    target:
+      - borg-server-archlinux
+
+# ---------- Role Requirements ----------
+
+- name: Fulfill role requirements for borg_server
+  hosts: borg-server-archlinux
+  gather_facts: true
+  tasks:
+    - name: Add users
+      ansible.builtin.user:
+        create_home: "{{ user.create_home | default(true) }}"
+        home: "{{ user.home | default(('/var/lib', user.name) | path_join) }}"
+        name: "{{ user.name }}"
+      loop: "{{ user_list }}"
+      loop_control:
+        loop_var: user
+      vars:
+        user_list:
+          - name: backup-app1
+          - name: backup-app2
+          - name: backup-app3
+
+    - name: Add folder /srv/borg-repo-pool-existing
+      ansible.builtin.file:
+        path: /srv/borg-repo-pool-existing
+        state: directory
+        owner: root
+        group: root
+        mode: "0744"
+
+    - name: Add empty mount points /media/existing-folder-*
+      ansible.builtin.file:
+        path: /media/existing-folder-{{ item }}
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - create-true
+        - create-false
+        - create-undefined
