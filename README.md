@@ -6,6 +6,18 @@ across an infrastructure.
 This collection configures a central borg backup server and does the necessary
 configuration on the clients to push the backups to the server.
 
+## Included Content
+
+### Roles
+
+- [borg_install](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/roles/borg_install):
+Installs borg backup packages.
+
+### Playbooks
+
+- [borg_install](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/playbooks/borg_install.yaml):
+Installs borg backup packages.
+
 ## Installation
 
 The collection can be obtained from the Git repository. This may be desirable to
