@@ -1,0 +1,15 @@
+---
+# tasks file for borg_install
+
+- name: "Update package cache for pacman"
+  community.general.pacman:
+    update_cache: true
+  become: true
+
+- name: "Install borg and dependencies"
+  community.general.pacman:
+    name: "{{ borg_install_pkg_list }}"
+    state: present
+  become: true
+
+# End of file

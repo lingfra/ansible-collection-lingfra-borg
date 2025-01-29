@@ -1,0 +1,10 @@
+---
+# tasks file for borg_install
+
+- name: Install borg and dependencies
+  ansible.builtin.package:
+    name: "{{ borg_install_pkg_list }}"
+    state: present
+  become: true
+
+# End of file

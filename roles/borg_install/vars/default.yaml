@@ -1,0 +1,10 @@
+---
+# vars file for borg_install
+
+borg_install_pkg_list_all: []
+
+borg_install_pkg_list_client: []
+
+borg_install_pkg_list_server: []
+
+# End of file

@@ -1,0 +1,10 @@
+---
+- name: Install borg backup
+  hosts: "{{ target | default('all') }}"
+  gather_facts: true
+  tags:
+    - borg_install
+  tasks:
+    - name: Import role lingling9000.borg.borg_install
+      ansible.builtin.import_role:
+        name: lingling9000.borg.borg_install
