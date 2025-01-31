@@ -19,18 +19,66 @@ argument_specs:
         elements: "dict"
         required: true
         options:
+          after_actions:
+            type: "list"
+            elements: "str"
+            required: false
+          after_backup:
+            type: "list"
+            elements: "str"
+            required: false
+          after_check:
+            type: "list"
+            elements: "str"
+            required: false
+          after_compact:
+            type: "list"
+            elements: "str"
+            required: false
           after_everything:
             type: "list"
             elements: "str"
             required: false
             description:
               - "Actions to to after all backups."
+          after_extract:
+            type: "list"
+            elements: "str"
+            required: false
+          after_prune:
+            type: "list"
+            elements: "str"
+            required: false
+          before_actions:
+            type: "list"
+            elements: "str"
+            required: false
+          before_backup:
+            type: "list"
+            elements: "str"
+            required: false
+          before_check:
+            type: "list"
+            elements: "str"
+            required: false
+          before_compact:
+            type: "list"
+            elements: "str"
+            required: false
           before_everything:
             type: "list"
             elements: "str"
             required: false
             description:
               - "Actions to do before all backups."
+          before_extract:
+            type: "list"
+            elements: "str"
+            required: false
+          before_prune:
+            type: "list"
+            elements: "str"
+            required: false
           exclude_patterns:
             type: "list"
             elements: "str"
@@ -95,9 +143,16 @@ argument_specs:
             required: false
             description:
               - "MySQL databases to backup."
+          match_archives:
+            type: "str"
+            required: false
           name:
             type: "str"
             required: true
+          on_error:
+            type: "list"
+            elements: "str"
+            required: false
           passphrase:
             type: "str"
             required: false

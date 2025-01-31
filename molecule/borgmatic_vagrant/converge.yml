@@ -51,5 +51,45 @@
             path: "/srv/backup/app2"
             init: true
             removable: false
+        before_actions:
+          - echo before_actions 1
+          - echo before_actions 2
+        before_backup:
+          - echo before_backup 1
+          - echo before_backup 2
+        before_prune:
+          - echo before_prune 1
+          - echo before_prune 2
+        before_compact:
+          - echo before_compact 1
+          - echo before_compact 2
+        before_check:
+          - echo before_check 1
+          - echo before_check 2
+        before_extract:
+          - echo before_extract 1
+          - echo before_extract 2
+        after_actions:
+          - echo after_actions 1
+          - echo after_actions 2
+        after_backup:
+          - echo after_backup 1
+          - echo after_backup 2
+        after_prune:
+          - echo after_prune 1
+          - echo after_prune 2
+        after_compact:
+          - echo after_compact 1
+          - echo after_compact 2
+        after_check:
+          - echo after_check 1
+          - echo after_check 2
+        after_extract:
+          - echo after_extract 1
+          - echo after_extract 2
+        match_archives: "'*'"
+        on_error:
+          - echo on_error 1
+          - echo on_error 2
     target:
       - borg-borgmatic-client

@@ -3,6 +3,29 @@ import re
 from ansible.errors import AnsibleFilterError
 
 
+def parse_actions(backup, scope) -> dict:
+    if not scope in ["after", "before"]:
+        raise AnsibleFilterError("Actions scope need to be 'before' or 'after'.")
+
+    actions = [
+        "actions",
+        "backup",
+        "prune",
+        "compact",
+        "check",
+        "extract",
+    ]
+
+    result = {}
+
+    for action in actions:
+        option_name = f"{scope}_{action}"
+        if option_name in backup.keys():
+            result[option_name] = backup[option_name]
+
+    return result
+
+
 def parse_databases_integrations(backup) -> list:
     databases = [
         "mariadb",
@@ -79,10 +102,14 @@ def parse_location(repo):
 
 def parse_repo(repo, backup):
     result = {
+        "after": parse_actions(backup, "after"),
+        "before": parse_actions(backup, "before"),
         "databases_integrations": parse_databases_integrations(backup),
         "exclude_patterns": backup.get("exclude_patterns", None),
         "init": repo.get("init", False),
         "location": parse_location(repo),
+        "match_archives": backup.get("match_archives", None),
+        "on_error": backup.get("on_error", None),
         "passphrase": backup["passphrase"],
         "removable": repo.get("removable", False),
         "retention_policy": parse_retention_policy(backup),

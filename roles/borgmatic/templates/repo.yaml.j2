@@ -59,3 +59,28 @@ skip_actions:
 
 {{ k }}: {{ v }}
 {% endfor %}
+{% for before_key in repo.before.keys() %}
+
+{{ before_key }}:
+{% for action in repo.before[before_key] %}
+  - {{ action }}
+{% endfor %}
+{% endfor %}
+{% for after_key in repo.after.keys() %}
+
+{{ after_key }}:
+{% for action in repo.after[after_key] %}
+  - {{ action }}
+{% endfor %}
+{% endfor %}
+{% if repo.on_error %}
+
+on_error:
+{% for action in repo.on_error %}
+  - {{ action }}
+{% endfor %}
+{% endif %}
+{% if repo.match_archives %}
+
+match_archives: {{ repo.match_archives }}
+{% endif %}
