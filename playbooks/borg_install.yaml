@@ -5,6 +5,6 @@
   tags:
     - borg_install
   tasks:
-    - name: Import role lingling9000.borg.borg_install
+    - name: Import role lingfra.borg.borg_install
       ansible.builtin.import_role:
-        name: lingling9000.borg.borg_install
+        name: lingfra.borg.borg_install
