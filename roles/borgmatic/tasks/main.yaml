@@ -27,5 +27,7 @@
         - configure
   tags:
     - configure
+  vars:
+    borgmatic_mounted_folders: "{{ ansible_mounts | selectattr('mount', 'defined') | map(attribute='mount') }}"
 
 # End of file

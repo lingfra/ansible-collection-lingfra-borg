@@ -14,6 +14,20 @@
 
 # ---------- Repo Initialization ----------
 
+- name: "Create local repository if required mount is available for '{{ repo.label }}'"
+  ansible.builtin.file:
+    path: "{{ repo.location }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+  diff: true
+  when:
+    - repo.init
+    - repo.local
+    - ((repo.required_mount in borgmatic_mounted_folders) if repo.required_mount else true)
+
 - name: "Initialize borg repository '{{ repo.location }}'"
   ansible.builtin.command:
     cmd: borg init -e repokey "{{ repo.location }}"

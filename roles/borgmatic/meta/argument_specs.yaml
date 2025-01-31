@@ -187,6 +187,8 @@ argument_specs:
           repos:
             type: "list"
             elements: "dict"
+            mutually_exclusive:
+              - ["hostname", "required_mount"]
             required_together:
               - ["hostname", "user"]
             options:
@@ -202,6 +204,12 @@ argument_specs:
               removable:
                 type: "bool"
                 default: false
+              required_mount:
+                type: "str"
+                required: false
+                description:
+                  - "When `init` is `true` and the folder specified by this variable is a mount, then a local repository will be initialized in it."
+                  - "This variable has no effect if `init` is set to `false`."
               user:
                 type: "str"
                 required: false
