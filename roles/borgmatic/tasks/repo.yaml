@@ -1,31 +1,9 @@
 ---
 # tasks file for borgmatic
 
-# ---------- Preparations ----------
-
-- name: "Set internal variables for {{ repo_loop_label }}"
-  ansible.builtin.set_fact:
-    borgmatic_repo_full_path: "{{ 'ssh://' ~ repo.user
-      ~ '@' ~ repo.hostname ~ repo.path }}"
-    borgmatic_repo_exclude_patterns: "{{ backup.exclude_patterns | default(none) }}"
-    borgmatic_repo_includes:
-      - "{{ borgmatic_globals_file }}"
-    borgmatic_repo_init: "{{ repo.init | default(false) }}"
-    borgmatic_repo_label: "{{ backup.name ~ '_'
-      ~ (repo.hostname | ansible.builtin.split('.') | first | replace('.', '_'))
-      ~ '_' ~ (repo.path | trim('/') | replace('/', '-')) }}"
-    borgmatic_repo_removable: "{{ repo.removable | default(false) }}"
-    borgmatic_repo_passphrase: "{{ backup.passphrase }}"
-    borgmatic_repo_source_directories: "{{ backup.source_directories }}"
-
-- name: "Set borgmatic_repo_config_path for {{ repo_loop_label }}"
-  ansible.builtin.set_fact:
-    borgmatic_repo_config_path: "{{ (borgmatic_backup_config_dir, borgmatic_repo_label ~ '.yaml')
-      | path_join }}"
-
 # ---------- Configuration ----------
 
-- name: "Template borgmatic config for {{ repo_loop_label }}"
+- name: "Template borgmatic config for {{ repo.label }}"
   ansible.builtin.template:
     src: repo.yaml.j2
     dest: "{{ borgmatic_repo_config_path }}"
@@ -36,9 +14,9 @@
 
 # ---------- Repo Initialization ----------
 
-- name: "Create borg repository '{{ borgmatic_repo_full_path }}'"
+- name: "Initialize borg repository '{{ repo.location }}'"
   ansible.builtin.command:
-    cmd: borg init -e repokey "{{ borgmatic_repo_full_path }}"
+    cmd: borg init -e repokey "{{ repo.location }}"
   become: true
   environment:
     BORG_EXIT_CODES: modern  # Exit codes from borg 1.4
@@ -64,20 +42,6 @@
     - config-init-repo
     - costly
   when:
-    - borgmatic_repo_init
-
-# ---------- Clean-Up ----------
-
-- name: "Nullify internal variables for {{ repo_loop_label }}"
-  ansible.builtin.set_fact:
-    borgmatic_repo_config_path: null
-    borgmatic_repo_exclude_patterns: null
-    borgmatic_repo_full_path: null
-    borgmatic_repo_includes: null
-    borgmatic_repo_init: null
-    borgmatic_repo_label: null
-    borgmatic_repo_removable: null
-    borgmatic_repo_passphrase: null
-    borgmatic_repo_source_directories: null
+    - repo.init
 
 # End of file

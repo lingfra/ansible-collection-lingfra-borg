@@ -18,29 +18,28 @@
 {% endfor %}
 
 source_directories:
-{% for source_directory in borgmatic_repo_source_directories %}
+{% for source_directory in repo.source_directories %}
   - {{ source_directory }}
 {% endfor %}
 
-{% if borgmatic_repo_exclude_patterns %}
+{% if repo.exclude_patterns %}
 exclude_patterns:
-{% for exclude_pattern in borgmatic_repo_exclude_patterns %}
+{% for exclude_pattern in repo.exclude_patterns %}
   - {{ exclude_pattern }}
 {% endfor %}
 {% endif %}
 
 repositories:
-  - path: {{ borgmatic_repo_full_path }}
-    label: {{ borgmatic_repo_label }}
+  - path: {{ repo.location }}
+    label: {{ repo.label }}
 
 encryption_passcommand: cat {{ borgmatic_backup_passphrase_file }}
-{% if borgmatic_repo_removable %}
+{% if repo.removable %}
 
 before_actions:
   - {{ borgmatic_check_repo_availability_script_path }} "{repository}" "cat '{{ borgmatic_backup_passphrase_file }}'"
 {% endif %}
-{% set databases_configs = backup | ansible.builtin.dict2items | selectattr('key', 'ansible.builtin.search', 'databases') %}
-{% for dbms in databases_configs %}
+{% for dbms in repo.databases_integrations %}
 
 {{ dbms.key }}:
 {% for db in dbms.value %}
@@ -49,15 +48,14 @@ before_actions:
 {% endfor %}
 {% endfor %}
 {% endfor %}
-{% if backup.skip_actions | default(false) %}
+{% if repo.skip_actions %}
 
 skip_actions:
-{% for action in backup.skip_actions %}
+{% for action in repo.skip_actions %}
   - {{ action }}
 {% endfor %}
 {% endif %}
-{% set keep_configs = backup | ansible.builtin.dict2items | selectattr('key', 'ansible.builtin.search', 'keep_') %}
-{% for keep_x in keep_configs %}
+{% for k, v in repo.retention_policy.items() %}
 
-{{ keep_x.key }}: {{ keep_x.value }}
+{{ k }}: {{ v }}
 {% endfor %}

@@ -19,17 +19,19 @@
         keep_daily: 14
         keep_weekly: 12
         keep_monthly: 24
+        skip_actions:
+          - prune
         repos:
           - hostname: borg-borgmatic-server01
             user: "backup-app1"
             path: "/srv/backup/app1"
             init: true
             removable: false
-          - hostname: borg-borgmatic-server01
-            user: "backup-app1"
-            path: "/media/backup/app1"
+          - path: "/media/backup/app1"
             init: true
             removable: true
+        systemd_service_options_override:
+          ReadWritePaths: "/media/backup/app1"
       - name: app2
         source_directories:
           - /etc

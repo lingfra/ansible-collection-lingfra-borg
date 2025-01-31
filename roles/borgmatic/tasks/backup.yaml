@@ -57,9 +57,12 @@
   loop: "{{ backup.repos }}"
   loop_control:
     loop_var: repo
-    label: "{{ repo_loop_label }}"
+    label: "{{ repo.label }}"
   vars:
-    repo_loop_label: "{{ repo.path | default('N/A') ~ ' on ' ~ repo.hostname ~ ' for ' ~ backup.name }}"
+    borgmatic_repo_includes:
+      - "{{ borgmatic_globals_file }}"
+    borgmatic_repo_config_path: "{{ (borgmatic_backup_config_dir, repo.label ~ '.yaml')
+      | path_join }}"
 
 # ---------- systemd ----------
 

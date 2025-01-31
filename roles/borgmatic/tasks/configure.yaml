@@ -122,7 +122,7 @@
 - name: "Include tasks backup.yaml"
   ansible.builtin.include_tasks:
     file: backup.yaml
-  loop: "{{ borgmatic_backups }}"
+  loop: "{{ borgmatic_backups | lingfra.borg.parse_backups }}"
   loop_control:
     loop_var: backup
     label: "{{ backup.name | default('N/A') }}"
