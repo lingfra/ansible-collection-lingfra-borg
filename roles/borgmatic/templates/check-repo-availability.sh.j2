@@ -37,6 +37,8 @@ export BORG_EXIT_CODES=modern
 export BORG_RSH="{{ borgmatic_ssh_command }}"
 export BORG_PASSCOMMAND="${borg_passcommand}"
 
+export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
 borg_info=$(borg info "${repository}" 2>&1)
 rc="$?"
 
