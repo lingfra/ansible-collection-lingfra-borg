@@ -84,3 +84,8 @@ on_error:
 
 match_archives: {{ repo.match_archives }}
 {% endif %}
+{% if repo.checks %}
+
+checks:
+{{ repo.checks | ansible.builtin.to_nice_yaml(indent=0) | indent(width=2, first=true) }}
+{% endif %}

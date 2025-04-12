@@ -104,6 +104,7 @@ def parse_repo(repo, backup):
     result = {
         "after": parse_actions(backup, "after"),
         "before": parse_actions(backup, "before"),
+        "checks": backup.get("checks", None),
         "databases_integrations": parse_databases_integrations(backup),
         "exclude_patterns": backup.get("exclude_patterns", None),
         "init": repo.get("init", False),
