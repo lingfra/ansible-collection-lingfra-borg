@@ -5,14 +5,14 @@
 # {{ borgmatic_backup_global_hooks_file }}
 #
 
-{% if backup.after_everything | default(false) %}
+{% if (backup.after_everything is defined) and (backup.after_everything is not none) %}
 after_everything:
 {% for command in backup.after_everything %}
   - {{ command }}
 {% endfor %}
 {% endif %}
 
-{% if backup.before_everything | default(false) %}
+{% if (backup.before_everything is defined) and (backup.before_everything is not none) %}
 before_everything:
 {% for command in backup.before_everything %}
   - {{ command }}

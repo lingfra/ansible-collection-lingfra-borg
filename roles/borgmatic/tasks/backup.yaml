@@ -38,9 +38,9 @@
     group: root
     mode: "0600"
   become: true
-  when:
-    - backup.after_everything | default(false)
-    - backup.before_everything | default(false)
+  when: >
+    (backup.after_everything is defined)
+    or (backup.before_everything is defined)
 
 - name: "Remove global hooks file if empty for '{{ backup.name }}'"
   ansible.builtin.file:
