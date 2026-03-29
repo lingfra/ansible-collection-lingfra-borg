@@ -31,7 +31,7 @@
 
 - name: "Set fact borg_server_mounted_folders"
   ansible.builtin.set_fact:
-    borg_server_mounted_folders: "{{ ansible_mounts | selectattr('mount', 'defined') | map(attribute='mount') }}"
+    borg_server_mounted_folders: "{{ ansible_facts['mounts'] | selectattr('mount', 'defined') | map(attribute='mount') }}"
   tags:
     - configure
 
