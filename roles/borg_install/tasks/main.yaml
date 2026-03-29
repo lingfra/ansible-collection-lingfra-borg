@@ -9,8 +9,8 @@
   vars:
     params:
       files:
-        - "{{ ansible_os_family }}.yaml"
-        - "{{ ansible_distribution }}.yaml"
+        - "{{ ansible_facts['os_family'] }}.yaml"
+        - "{{ ansible_facts['distribution'] }}.yaml"
         - default.yaml
       paths:
         - "vars"
@@ -27,7 +27,7 @@
     - borg_install
     - configure
 
-- name: "Include tasks install task for {{ ansible_pkg_mgr | default('generic package manager') }}"
+- name: "Include tasks install task for {{ ansible_facts['pkg_mgr]' | default('generic package manager') }}"
   ansible.builtin.include_tasks:
     file: "{{ lookup('ansible.builtin.first_found', params) }}"
     apply:
@@ -40,7 +40,7 @@
   vars:
     params:
       files:
-        - "pkg_{{ ansible_pkg_mgr }}.yaml"
+        - "pkg_{{ ansible_facts['pkg_mgr'] }}.yaml"
         - "pkg_generic.yaml"
       paths:
         - "tasks"
