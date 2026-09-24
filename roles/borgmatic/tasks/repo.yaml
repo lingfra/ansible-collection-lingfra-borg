@@ -1,0 +1,61 @@
+---
+# tasks file for borgmatic
+
+# ---------- Configuration ----------
+
+- name: "Template borgmatic config for {{ repo.label }}"
+  ansible.builtin.template:
+    src: repo.yaml.j2
+    dest: "{{ borgmatic_repo_config_path }}"
+    mode: "0600"
+    owner: root
+    group: root
+  become: true
+
+# ---------- Repo Initialization ----------
+
+- name: "Create local repository if required mount is available for '{{ repo.label }}'"
+  ansible.builtin.file:
+    path: "{{ repo.location }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+  diff: true
+  when:
+    - repo.init
+    - repo.local
+    - ((repo.required_mount in borgmatic_mounted_folders) if repo.required_mount else true)
+
+- name: "Initialize borg repository '{{ repo.location }}'"
+  ansible.builtin.command:
+    cmd: borg init -e repokey "{{ repo.location }}"
+  become: true
+  environment:
+    BORG_EXIT_CODES: modern  # Exit codes from borg 1.4
+    BORG_RSH: "ssh -i '{{ borgmatic_ssh_priv_key_file }}' -o 'UserKnownHostsFile={{ borgmatic_ssh_known_hosts_file }}'"
+    BORG_PASSCOMMAND: "cat {{ borgmatic_backup_passphrase_file }}"
+
+    # directories
+    BORG_BASE_DIR: "{{ borgmatic_borg_base_dir }}"
+    BORG_CACHE_DIR: "{{ borgmatic_borg_cache_dir }}"
+    BORG_CONFIG_DIR: "{{ borgmatic_borg_config_dir }}"
+    BORG_SECURITY_DIR: "{{ borgmatic_borg_security_dir }}"
+    BORG_KEYS_DIR: "{{ borgmatic_borg_keys_dir }}"
+  register: borgmatic_cmd_borg_init_result
+  # The creation of a repository is succesfull when we get rc 0. Then a change has happened.
+  changed_when: borgmatic_cmd_borg_init_result.rc == 0
+  # Since version 1.4 borg does return exit code 10 if a repository already
+  # exists. This is enabled by BORG_EXIT_CODES=modern.
+  failed_when:
+    - borgmatic_cmd_borg_init_result.rc != 0
+    - borgmatic_cmd_borg_init_result.rc != 10
+    - borgmatic_cmd_borg_init_result.rc != 18 or not repo.removable
+  tags:
+    - config-init-repo
+    - costly
+  when:
+    - repo.init
+
+# End of file

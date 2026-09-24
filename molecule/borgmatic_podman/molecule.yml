@@ -1,0 +1,21 @@
+---
+driver:
+  name: podman
+platforms:
+  - name: borg-borgmatic-client
+    image: archlinux:latest
+    network: borg-borgmatic-network
+    pre_build_image: true
+  - name: borg-borgmatic-server
+    image: archlinux:latest
+    network: borg-borgmatic-network
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callbacks_enabled: ansible.posix.profile_tasks
+      stdout_callback: ansible.posix.debug
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml

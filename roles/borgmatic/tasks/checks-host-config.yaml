@@ -1,0 +1,41 @@
+---
+# tasks file for borgmatic
+
+# Example of a check to verify the existence of the expected users and groups.
+
+- name: Get user database
+  ansible.builtin.getent:
+    database: passwd
+  tags:
+    - checks
+    - checks-host-config
+
+- name: Get group database
+  ansible.builtin.getent:
+    database: group
+  tags:
+    - checks
+    - checks-host-config
+
+# - name: Check that necessary user and groups exist
+#   ansible.builtin.assert:
+#     that:
+#       # example.owner must be an existing user
+#       - (example.owner is undefined) or (example.owner in getent_passwd.keys())
+#
+#       # example.group must be an existing group
+#       - (example.group is undefined) or (example.group in getent_group.keys())
+#     fail_msg: >
+#       The configured user or group for example '{{ example.name }}' in list
+#       'borgmatic_examples' does not exist. Create it or choose another user
+#       or group.
+#     success_msg: All configured user and groups are present.
+#     quiet: true
+#   loop: "{{ borgmatic_subvolumes }}"
+#   loop_control:
+#     loop_var: example
+#   tags:
+#     - checks
+#     - checks-host-config
+
+# End of file

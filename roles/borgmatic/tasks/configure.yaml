@@ -1,0 +1,143 @@
+---
+# tasks file for borgmatic
+
+# ---------- Directories ----------
+
+- name: "Set directory variables"
+  ansible.builtin.set_fact:
+    borgmatic_ssh_dir: "{{ (borgmatic_borg_config_dir, 'ssh') | path_join }}"
+
+- name: "Create or modify directories"
+  ansible.builtin.file:
+    path: "{{ directory }}"
+    state: directory
+    group: root
+    mode: "0700"
+    owner: root
+  become: true
+  loop:
+    - "{{ borgmatic_borg_base_dir }}"
+    - "{{ borgmatic_borg_cache_dir }}"
+    - "{{ borgmatic_borg_config_dir }}"
+    - "{{ borgmatic_bin_dir }}"
+    - "{{ borgmatic_borg_pass_dir }}"
+    - "{{ borgmatic_borg_security_dir }}"
+    - "{{ borgmatic_borg_keys_dir }}"
+    - "{{ borgmatic_borgmatic_config_d_dir }}"
+    - "{{ borgmatic_borgmatic_config_dir }}"
+    - "{{ borgmatic_borgmatic_runtime_dir }}"
+    - "{{ borgmatic_borgmatic_state_dir }}"
+    - "{{ borgmatic_ssh_dir }}"
+  loop_control:
+    loop_var: directory
+  tags:
+    - config-dirs
+    - costly
+
+# ---------- SSH Config ----------
+
+- name: "Set internal variables for SSH config"
+  ansible.builtin.set_fact:
+    borgmatic_ssh_known_hosts_file: "{{ (borgmatic_ssh_dir, 'known_hosts') | path_join }}"
+    borgmatic_ssh_priv_key_file: "{{ (borgmatic_ssh_dir, 'id_backup_ed25519') | path_join }}"
+    borgmatic_ssh_pub_key_file: "{{ (borgmatic_ssh_dir, 'id_backup_ed25519.pub') | path_join }}"
+
+- name: "Gen passwordless SSH keys on Client"
+  community.crypto.openssh_keypair:
+    path: "{{ borgmatic_ssh_priv_key_file }}"
+    type: ed25519
+  become: true
+
+# Transfer client pub key to server authorized_keys file
+
+- name: "Fetch public key from client"
+  ansible.builtin.slurp:
+    src: "{{ borgmatic_ssh_pub_key_file }}"
+  become: true
+  register: borgmatic_ssh_pub_key_slurp
+
+- name: "Decode public key from client"
+  ansible.builtin.set_fact:
+    borgmatic_ssh_pub_key_content: "{{ borgmatic_ssh_pub_key_slurp['content'] | b64decode }}"
+
+- name: "Include config-ssh.yaml"
+  ansible.builtin.include_tasks:
+    file: config-ssh.yaml
+  loop: "{{ (borgmatic_backups | lingfra.borg.parse_servers).keys() }}"
+  loop_control:
+    loop_var: server
+  tags:
+    - config-ssh
+    - costly
+  vars:
+    servers: "{{ (borgmatic_backups | lingfra.borg.parse_servers) }}"
+
+- name: "Set permissions for ssh files on client"
+  ansible.builtin.file:
+    path: "{{ path }}"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  loop:
+    - "{{ borgmatic_ssh_known_hosts_file }}"
+    - "{{ borgmatic_ssh_priv_key_file }}"
+    - "{{ borgmatic_ssh_pub_key_file }}"
+  loop_control:
+    loop_var: path
+
+- name: "Set borgmatic_ssh_command"
+  ansible.builtin.set_fact:
+    borgmatic_ssh_command: ssh -i '{{ borgmatic_ssh_priv_key_file }}' -o 'UserKnownHostsFile={{ borgmatic_ssh_known_hosts_file }}'
+
+# ---------- Borgmatic Config ----------
+
+- name: "Set fact borgmatic_globals_file"
+  ansible.builtin.set_fact:
+    borgmatic_globals_file: "{{ [borgmatic_borgmatic_config_dir, 'globals.yaml'] | path_join }}"
+
+- name: "Template borgmatic globals"
+  ansible.builtin.template:
+    src: globals.yaml.j2
+    dest: "{{ borgmatic_globals_file }}"
+    mode: "0600"
+    owner: root
+    group: root
+  become: true
+
+- name: "Set fact borgmatic_check_repo_availability_script_path"
+  ansible.builtin.set_fact:
+    borgmatic_check_repo_availability_script_path: "{{
+      (borgmatic_bin_dir, 'check-repo-availability') | path_join }}"
+
+- name: "Template check-repo-availability script"
+  ansible.builtin.template:
+    src: check-repo-availability.sh.j2
+    dest: "{{ borgmatic_check_repo_availability_script_path }}"
+    owner: root
+    group: root
+    mode: "0500"
+  become: true
+
+- name: "Include tasks backup.yaml"
+  ansible.builtin.include_tasks:
+    file: backup.yaml
+  loop: "{{ borgmatic_backups | lingfra.borg.parse_backups }}"
+  loop_control:
+    loop_var: backup
+    label: "{{ backup.name | default('N/A') }}"
+
+# ---------- Clean-Up ----------
+
+- name: "Nullify internal variables"
+  ansible.builtin.set_fact:
+    # directories
+    borgmatic_ssh_dir: null
+
+    # SSH config
+    borgmatic_ssh_command: null
+    borgmatic_ssh_known_hosts_file: null
+    borgmatic_ssh_priv_key_file: null
+    borgmatic_ssh_pub_key_file: null
+
+# End of file

@@ -1,0 +1,259 @@
+---
+# argument specs file for borgmatic
+
+argument_specs:
+  main:
+    short_description: Main entry point for borgmatic role
+    description:
+      - Longer descriptions.
+      - Every list item is a new paragraph.
+    options:
+      borgmatic_compression:
+        type: "str"
+        default: "zstd"
+        description:
+          - "Compression to be used on the repositories."
+
+      borgmatic_backups:
+        type: "list"
+        elements: "dict"
+        required: true
+        options:
+          after_actions:
+            type: "list"
+            elements: "str"
+            required: false
+          after_backup:
+            type: "list"
+            elements: "str"
+            required: false
+          after_check:
+            type: "list"
+            elements: "str"
+            required: false
+          after_compact:
+            type: "list"
+            elements: "str"
+            required: false
+          after_everything:
+            type: "list"
+            elements: "str"
+            required: false
+            description:
+              - "Actions to to after all backups."
+          after_extract:
+            type: "list"
+            elements: "str"
+            required: false
+          after_prune:
+            type: "list"
+            elements: "str"
+            required: false
+          before_actions:
+            type: "list"
+            elements: "str"
+            required: false
+          before_backup:
+            type: "list"
+            elements: "str"
+            required: false
+          before_check:
+            type: "list"
+            elements: "str"
+            required: false
+          before_compact:
+            type: "list"
+            elements: "str"
+            required: false
+          before_everything:
+            type: "list"
+            elements: "str"
+            required: false
+            description:
+              - "Actions to do before all backups."
+          before_extract:
+            type: "list"
+            elements: "str"
+            required: false
+          before_prune:
+            type: "list"
+            elements: "str"
+            required: false
+          exclude_patterns:
+            type: "list"
+            elements: "str"
+            required: false
+            description:
+              - "List of borg exclude patterns (see `borg help patterns`)."
+          keep_daily:
+            type: "int"
+            required: false
+            description:
+              - "Number of daily archives to keep."
+          keep_hourly:
+            type: "int"
+            required: false
+            description:
+              - "Number of hourly archives to keep."
+          keep_minutely:
+            type: "int"
+            required: false
+            description:
+              - "Number of minutely archives to keep."
+          keep_monthly:
+            type: "int"
+            required: false
+            description:
+              - "Number of monthly archives to keep."
+          keep_secondly:
+            type: "int"
+            required: false
+            description:
+              - "Number of secondly archives to keep."
+          keep_weekly:
+            type: "int"
+            required: false
+            description:
+              - "Number of weekly archives to keep."
+          keep_within:
+            type: "str"
+            required: false
+            description:
+              - "Keep all archives within this time interval."
+          keep_yearly:
+            type: "int"
+            required: false
+            description:
+              - "Number of yearly archives to keep."
+          mariadb_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "MariaDB databases to backup."
+          mongodb_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "MongoDB databases to backup."
+          mysql_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "MySQL databases to backup."
+          match_archives:
+            type: "str"
+            required: false
+          name:
+            type: "str"
+            required: true
+          on_error:
+            type: "list"
+            elements: "str"
+            required: false
+          passphrase:
+            type: "str"
+            required: false
+          skip_actions:
+            type: "list"
+            elements: "str"
+            choices:
+              - "init"
+              - "compact"
+              - "create"
+              - "prune"
+              - "check"
+            required: false
+            description:
+              - "List of one or more actions to skip."
+          systemd_service_options_override:
+            type: "dict"
+            required: false
+            description:
+              - "Override options for the systemd unit."
+              - "Has higher precedence than `borgmatic_systemd_service_options__override`."
+          postgresql_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "PostgreSQL databases to backup."
+          source_directories:
+            type: "list"
+            elements: "str"
+            required: true
+          repos:
+            type: "list"
+            elements: "dict"
+            mutually_exclusive:
+              - ["hostname", "required_mount"]
+            required_together:
+              - ["hostname", "user"]
+            options:
+              hostname:
+                type: "str"
+                required: false
+              init:
+                type: "bool"
+                default: false
+              path:
+                type: "str"
+                required: true
+              removable:
+                type: "bool"
+                default: false
+              required_mount:
+                type: "str"
+                required: false
+                description:
+                  - "When `init` is `true` and the folder specified by this variable is a mount, then a local repository will be initialized in it."
+                  - "This variable has no effect if `init` is set to `false`."
+              user:
+                type: "str"
+                required: false
+          sqlite_databases:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "SQLite databases to backup."
+      borgmatic_systemd_service_create:
+        type: "bool"
+        default: true
+        description:
+          - "Whether the borgmatic.service unit should be deployed or not."
+          - "If set to `false` the borgmatic.service will be removed."
+      borgmatic_systemd_service_options__override:
+        type: "dict"
+        required: false
+        description:
+          - "Options for the `[Service]` section in the borgmatic.service unit."
+          - "Will be combined with the default options from `borgmatic_systemd_service_options__default` specified in vars/main.yaml."
+      borgmatic_systemd_service_start:
+        type: "bool"
+        default: false
+        description:
+          - "Whether or not the borgmatic.service should be started or not."
+          - "Setting this to `true` will create a backup. Can be useful to create ad-hoc backups with Ansible."
+      borgmatic_systemd_timer_create:
+        type: "bool"
+        default: true
+        description:
+          - "Whether the borgmatic.timer unit should be deployed or not."
+          - "Only has an effect if `borgmatic_systemd_service_create` is also `true`."
+          - "If set to `false` the borgmatic.timer will be removed."
+      borgmatic_systemd_timer_enable:
+        type: "bool"
+        default: true
+        description:
+          - "Whether the borgmatic.timer unit should be enabled or not."
+      borgmatic_systemd_timer_options:
+        type: "dict"
+        default:
+          OnCalendar: "*-*-* 04:00:00"
+        description:
+          - "Options for the `[Timer]` section in the borgmatic.timer unit."
+
+# End of file

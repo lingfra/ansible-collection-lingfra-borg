@@ -1,0 +1,60 @@
+---
+# tasks file for borgmatic
+
+- name: Check public role variable syntax
+  ansible.builtin.assert:
+    that:
+      - true
+      # # borgmatic_example_variable is a string
+      # - borgmatic_example_variable is defined
+      # - borgmatic_example_variable is not none
+      # - borgmatic_example_variable is string
+      # - borgmatic_example_variable | length > 0
+    fail_msg: >
+      Bad syntax for public role variables. Refer to the documentation and
+      check your configuration.
+    success_msg: Syntax is correct for public role variables.
+    quiet: true
+  tags:
+    - checks
+    - checks-syntax
+
+# # Example to check a list of dicts.
+# - name: Check borgmatic_examples item syntax
+#   ansible.builtin.assert:
+#     that:
+#       # example.name is a string
+#       - example.name is defined
+#       - example.name is not none
+#       - example.name is string
+#       - example.name | length > 0
+#
+#       # example.owner is a string
+#       - (example.owner is undefined) or (example.owner is not none)
+#       - (example.owner is undefined) or (example.owner is string)
+#       - (example.owner is undefined) or (example.owner | length > 0)
+#
+#       # example.group is a string
+#       - (example.group is undefined) or (example.group is not none)
+#       - (example.group is undefined) or (example.group is string)
+#       - (example.group is undefined) or (example.group | length > 0)
+#     fail_msg: |
+#       The item syntax of 'borgmatic_examples' is incorrect. Make sure your list
+#       items have the following syntax:
+#
+#       - name (string, mandatory)
+#
+#       - owner (string, optional)
+#       - group (string, optional)
+#
+#       For more information about the values, please refer to the documentation.
+#     success_msg: All items in 'borgmatic_examples' have correct syntax.
+#     quiet: true
+#   loop: "{{ borgmatic_examples }}"
+#   loop_control:
+#     loop_var: example
+#   tags:
+#     - checks
+#     - checks-syntax
+
+# End of file

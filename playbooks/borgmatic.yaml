@@ -1,0 +1,10 @@
+---
+- name: Configure borgmatic
+  hosts: "{{ target | default('all') }}"
+  gather_facts: true
+  tags:
+    - borgmatic
+  tasks:
+    - name: Import role lingfra.borg.borgmatic
+      ansible.builtin.import_role:
+        name: lingfra.borg.borgmatic

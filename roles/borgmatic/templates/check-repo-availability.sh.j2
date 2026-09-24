@@ -1,0 +1,55 @@
+#!/usr/bin/sh
+
+# ##############################################################################
+#
+# {{ ansible_managed }}
+#
+# {{ borgmatic_check_repo_availability_script_path }}
+#
+# Expected arguments:
+#
+#   $1: borg repository
+#   $2: passcommand
+#
+# ##############################################################################
+
+if [ -n "$1" ]; then
+  repository="$1"
+else
+  echo "Provide a repository as first argument!"
+  exit 1
+fi
+
+if [ -n "$2" ]; then
+  borg_passcommand="$2"
+else
+  echo "Provide a passcommand as second argument!"
+  exit 1
+fi
+
+export BORG_BASE_DIR="{{ borgmatic_borg_base_dir }}"
+export BORG_CACHE_DIR="{{ borgmatic_borg_cache_dir }}"
+export BORG_CONFIG_DIR="{{ borgmatic_borg_config_dir }}"
+export BORG_KEYS_DIR="{{ borgmatic_borg_keys_dir }}"
+export BORG_SECURITY_DIR="{{ borgmatic_borg_security_dir }}"
+
+export BORG_EXIT_CODES=modern
+export BORG_RSH="{{ borgmatic_ssh_command }}"
+export BORG_PASSCOMMAND="${borg_passcommand}"
+
+export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+borg_info=$(borg info "${repository}" 2>&1)
+rc="$?"
+
+if [ "$rc" -eq 0 ]; then
+    exit 0
+elif [ "$rc" -eq 13 ]; then
+    exit 75
+else
+    echo "Unexpected error ${rc} occured while checking ${repository}"
+    echo ""
+    echo "${borg_info}"
+    echo ""
+    exit 2
+fi

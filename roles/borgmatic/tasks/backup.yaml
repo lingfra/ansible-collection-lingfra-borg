@@ -1,0 +1,84 @@
+---
+# tasks file for borgmatic
+
+# ---------- Preparations ----------
+
+- name: "Set internal variables for '{{ backup.name }}'"
+  ansible.builtin.set_fact:
+    borgmatic_backup_config_dir: "{{ (borgmatic_borgmatic_config_d_dir, backup.name) | path_join }}"
+    borgmatic_backup_global_hooks_file: "{{ [borgmatic_borgmatic_config_d_dir, backup.name, backup.name ~ '_' ~ 'global_hooks.yaml'] | path_join }}"
+    borgmatic_backup_passphrase_file: "{{ (borgmatic_borg_pass_dir, backup.name)
+      | path_join }}"
+
+# ---------- Configuration ----------
+
+- name: "Create config directory for '{{ backup.name }}'"
+  ansible.builtin.file:
+    path: "{{ borgmatic_backup_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+
+- name: "Copy passphrase to file for '{{ backup.name }}'"
+  ansible.builtin.copy:
+    content: "{{ backup.passphrase }}"
+    dest: "{{ borgmatic_backup_passphrase_file }}"
+    owner: root
+    group: root
+    mode: "0400"
+  become: true
+
+- name: "Template global hooks file for '{{ backup.name }}'"
+  ansible.builtin.template:
+    src: global-hooks.yaml.j2
+    dest: "{{ borgmatic_backup_global_hooks_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  when:
+    - backup.after_everything | default(false)
+    - backup.before_everything | default(false)
+
+- name: "Remove global hooks file if empty for '{{ backup.name }}'"
+  ansible.builtin.file:
+    dest: "{{ borgmatic_backup_global_hooks_file }}"
+    state: absent
+  become: true
+  when:
+    - not (backup.after_everything | default(false))
+    - not (backup.before_everything | default(false))
+
+- name: "Include tasks repo.yaml for '{{ backup.name }}'"
+  ansible.builtin.include_tasks:
+    file: repo.yaml
+  loop: "{{ backup.repos }}"
+  loop_control:
+    loop_var: repo
+    label: "{{ repo.label }}"
+  vars:
+    borgmatic_repo_includes:
+      - "{{ borgmatic_globals_file }}"
+    borgmatic_repo_config_path: "{{ (borgmatic_backup_config_dir, repo.label ~ '.yaml')
+      | path_join }}"
+
+# ---------- systemd ----------
+
+- name: "Include tasks systemd.yaml for '{{ backup.name }}'"
+  ansible.builtin.include_tasks:
+    file: systemd.yaml
+  vars:
+    systemd_service_name: "{{ 'borgmatic-' ~ backup.name ~ '.service' }}"
+    systemd_timer_name: "{{ 'borgmatic-' ~ backup.name ~ '.timer' }}"
+    systemd_options_override_local: "{{ backup.systemd_service_options_override | default({}) }}"
+
+# ---------- Clean-Up ----------
+
+- name: "Nullify internal variables for '{{ backup.name }}'"
+  ansible.builtin.set_fact:
+    borgmatic_backup_global_hooks_file: null
+    borgmatic_backup_passphrase_file: null
+
+# End of file

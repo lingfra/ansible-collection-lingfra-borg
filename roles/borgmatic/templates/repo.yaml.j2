@@ -1,0 +1,86 @@
+---
+# ##############################################################################
+#
+# {{ ansible_managed }}
+#
+# {{ borgmatic_repo_config_path }}
+#
+# See following resources for more information on borgmatic and borg:
+#
+#   - https://torsion.org/borgmatic/
+#   - https://borgbackup.readthedocs.io/en/stable/
+#
+# ##############################################################################
+
+<<: !include 
+{% for file in borgmatic_repo_includes %}
+  - "{{ file }}"
+{% endfor %}
+
+source_directories:
+{% for source_directory in repo.source_directories %}
+  - {{ source_directory }}
+{% endfor %}
+
+{% if repo.exclude_patterns %}
+exclude_patterns:
+{% for exclude_pattern in repo.exclude_patterns %}
+  - {{ exclude_pattern }}
+{% endfor %}
+{% endif %}
+
+repositories:
+  - path: {{ repo.location }}
+    label: {{ repo.label }}
+
+encryption_passcommand: cat {{ borgmatic_backup_passphrase_file }}
+{% if repo.removable %}
+
+before_actions:
+  - {{ borgmatic_check_repo_availability_script_path }} "{repository}" "cat '{{ borgmatic_backup_passphrase_file }}'"
+{% endif %}
+{% for dbms in repo.databases_integrations %}
+
+{{ dbms.key }}:
+{% for db in dbms.value %}
+  - {% for k, v in db.items() %}
+{{ '' if loop.first else '    ' }}{{ k ~ ': ' ~ v }}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+{% if repo.skip_actions %}
+
+skip_actions:
+{% for action in repo.skip_actions %}
+  - {{ action }}
+{% endfor %}
+{% endif %}
+{% for k, v in repo.retention_policy.items() %}
+
+{{ k }}: {{ v }}
+{% endfor %}
+{% for before_key in repo.before.keys() %}
+
+{{ before_key }}:
+{% for action in repo.before[before_key] %}
+  - {{ action }}
+{% endfor %}
+{% endfor %}
+{% for after_key in repo.after.keys() %}
+
+{{ after_key }}:
+{% for action in repo.after[after_key] %}
+  - {{ action }}
+{% endfor %}
+{% endfor %}
+{% if repo.on_error %}
+
+on_error:
+{% for action in repo.on_error %}
+  - {{ action }}
+{% endfor %}
+{% endif %}
+{% if repo.match_archives %}
+
+match_archives: {{ repo.match_archives }}
+{% endif %}

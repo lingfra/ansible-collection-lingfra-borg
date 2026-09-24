@@ -1,0 +1,42 @@
+---
+# vars file for borgmatic
+
+borgmatic_borg_base_dir: /var/lib/borg
+borgmatic_borg_cache_dir: /var/cache/borg
+borgmatic_borg_config_dir: /etc/borg
+borgmatic_bin_dir: /etc/borg/bin
+borgmatic_borg_pass_dir: /etc/borg/pass
+borgmatic_borg_security_dir: /var/lib/borg/security
+borgmatic_borg_keys_dir: /var/lib/borg/keys
+borgmatic_borgmatic_config_d_dir: /etc/borgmatic.d
+borgmatic_borgmatic_config_dir: /etc/borgmatic
+borgmatic_borgmatic_runtime_dir: /run/borgmatic
+borgmatic_borgmatic_state_dir: /var/lib/borgmatic
+
+borgmatic_systemd_service_options__default:
+  CacheDirectory: borg
+  CacheDirectoryMode: "0700"
+  CapabilityBoundingSet: CAP_DAC_READ_SEARCH CAP_NET_RAW
+  LockPersonality: true
+  MemoryDenyWriteExecute: false
+  NoNewPrivileges: true
+  PrivateDevices: true
+  PrivateTmp: true
+  ProtectClock: true
+  ProtectControlGroups: true
+  ProtectHome: true
+  ProtectHostname: true
+  ProtectKernelLogs: true
+  ProtectKernelModules: true
+  ProtectKernelTunables: true
+  ProtectSystem: strict
+  RestrictAddressFamilies: AF_UNIX AF_INET AF_INET6 AF_NETLINK
+  RestrictRealtime: true
+  RestrictSUIDSGID: true
+  RuntimeDirectory: borgmatic
+  RuntimeDirectoryMode: "0700"
+  StateDirectory: borgmatic borg
+  StateDirectoryMode: "0700"
+  SystemCallArchitectures: native
+
+# End of file

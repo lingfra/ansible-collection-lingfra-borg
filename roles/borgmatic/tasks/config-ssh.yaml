@@ -1,0 +1,56 @@
+---
+# tasks file for borgmatic
+#
+# This file expects the following variables:
+#
+#   servers (type: dict): {
+#     "server_name_as_string": {
+#       "user_name_as_string": [
+#           "path",
+#           "path",
+#           ...
+#         ]
+#     }
+#   }
+#   server (type: str): used as key for 'servers' dict.
+
+- name: "Add client key to autorized_keys and restrict to repo paths on server"
+  become: true
+  ansible.posix.authorized_key:
+    key: "{{ borgmatic_ssh_pub_key_content }}"
+    user: "{{ user }}"
+    key_options: "{{ lookup('ansible.builtin.template', 'ssh-config-borg-serve.j2').split('\n') | first }}"
+    exclusive: true
+  delegate_to: "{{ server }}"
+  loop: "{{ servers[server].keys() }}"
+  loop_control:
+    loop_var: user
+  vars:
+    paths: "{{ servers[server][user] }}"
+
+# Transfer server pub host key to client known hosts file
+
+- name: "Fetch public ssh host key from server"
+  ansible.builtin.slurp:
+    src: /etc/ssh/ssh_host_ed25519_key.pub
+  become: true
+  register: borgmatic_server_ssh_host_pub_key_slurp
+  delegate_to: "{{ server }}"
+  run_once: true
+
+- name: "Decode public ssh host key from server"
+  ansible.builtin.set_fact:
+    # The content is splitted to get type, key and comment as single fields.
+    borgmatic_server_ssh_host_pub_key_content: "{{ borgmatic_server_ssh_host_pub_key_slurp['content'] | b64decode | split(' ') }}"
+  run_once: true
+
+- name: "Add ssh host key from server to custom known_hosts on client"
+  become: true
+  ansible.builtin.known_hosts:
+    path: "{{ borgmatic_ssh_known_hosts_file }}"
+    name: "{{ server }}"
+    # content[0] = type, content[1] = key
+    key: "{{ server }} {{ borgmatic_server_ssh_host_pub_key_content[0] }} {{ borgmatic_server_ssh_host_pub_key_content[1] }}"
+    state: present
+
+# End of file

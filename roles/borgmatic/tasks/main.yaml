@@ -1,0 +1,33 @@
+---
+# tasks file for borgmatic
+
+# ---------- Checks ----------
+
+- name: Include checks for role variable syntax
+  ansible.builtin.include_tasks:
+    file: checks-syntax.yaml
+  tags:
+    - checks
+    - checks-syntax
+
+- name: Include checks for host configuration
+  ansible.builtin.include_tasks:
+    file: checks-host-config.yaml
+  tags:
+    - checks
+    - checks-host-config
+
+# ---------- Configure ----------
+
+- name: Include tasks for configuration
+  ansible.builtin.include_tasks:
+    file: configure.yaml
+    apply:
+      tags:
+        - configure
+  tags:
+    - configure
+  vars:
+    borgmatic_mounted_folders: "{{ ansible_mounts | selectattr('mount', 'defined') | map(attribute='mount') }}"
+
+# End of file
