@@ -5,18 +5,22 @@
 # {{ borgmatic_backup_global_hooks_file }}
 #
 
+{% if ((backup.after_everything is defined) and (backup.after_everything is not none)) or ((backup.before_everything is defined) and (backup.before_everything is not none)) %}
+commands:
 {% if (backup.after_everything is defined) and (backup.after_everything is not none) %}
-after_everything:
+  - after: everything
+    run:
 {% for command in backup.after_everything %}
-  - {{ command }}
+      - {{ command }}
 {% endfor %}
 {% endif %}
-
 {% if (backup.before_everything is defined) and (backup.before_everything is not none) %}
-before_everything:
+  - before: everything
+    run:
 {% for command in backup.before_everything %}
-  - {{ command }}
+      - {{ command }}
 {% endfor %}
+{% endif %}
 {% endif %}
 
 repositories: []
