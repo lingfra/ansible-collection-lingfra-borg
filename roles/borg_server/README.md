@@ -28,11 +28,11 @@ Whether or not the repo pool directories should be restricted. If `true`, it res
 
 #### `borg_server_repo_pools`
 
-Type: `list of dicts of 'borg_server_repo_pools' options`, **required**.
+Type: list of dicts of `borg_server_repo_pools` [options](#options-for-main--borg_server_repo_pools), **required**.
 
 List of repo pool directories
 
-**Options:**
+### Options for `main` > `borg_server_repo_pools`
 
 - `create` (Type: `bool`, optional).
 
@@ -42,23 +42,9 @@ List of repo pool directories
 
   Directory under which the borg repositories are created.
 
-- **`repos`** (Type: `list of dicts of 'repos' options`, **required**).
+- **`repos`** (Type: list of dicts of `repos` [options](#options-for-main--borg_server_repo_pools--repos), **required**).
 
   List with the repositories to be created / managed in this repo pool.
-
-  **Options:**
-
-  - **`name`** (Type: `str`, **required**).
-
-    The name of the borg repository. Must be unique.
-
-  - `group` (Type: `str`, optional).
-
-    The group of the borg repository. Default to owner.
-
-  - **`owner`** (Type: `str`, **required**).
-
-    The owner (user) of the borg repository. Need to exist, have a valid login shell and a home directory, which is not a borg repo directory.
 
 - `required_mount` (Type: `str`, optional).
 
@@ -67,6 +53,20 @@ List of repo pool directories
 - `restrict` (Type: `bool`, optional).
 
   Overrides [`borg_server_repo_pool_restrict`](#borg_server_repo_pool_restrict) for this repo pool.
+
+### Options for `main` > `borg_server_repo_pools` > `repos`
+
+- **`name`** (Type: `str`, **required**).
+
+  The name of the borg repository. Must be unique.
+
+- `group` (Type: `str`, optional).
+
+  The group of the borg repository. Default to owner.
+
+- **`owner`** (Type: `str`, **required**).
+
+  The owner (user) of the borg repository. Need to exist, have a valid login shell and a home directory, which is not a borg repo directory.
 
 ## Dependencies
 
