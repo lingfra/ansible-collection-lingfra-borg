@@ -1,5 +1,19 @@
 # Ansible Collection - lingfra.borg
 
+> [!WARNING]
+> **This repository has moved to GitHub:
+> [github.com/lingfra/ansible-collection-lingfra-borg](https://github.com/lingfra/ansible-collection-lingfra-borg).**
+> The Codeberg repository is no longer maintained. All issues and pull requests
+> have been migrated, keeping their numbers.
+>
+> In July 2026 the Codeberg e.V. assembly
+> [voted](https://blog.codeberg.org/protecting-our-floss-commons-from-llms.html)
+> to extend Codeberg's Terms of Use with
+> [§ 2 (1) 7](https://codeberg.org/Codeberg/org/commit/71149c7fc95ccfeae36109b5cddca339e4aa1473),
+> which prohibits sharing projects that mostly consist of code written by
+> generative AI tools such as Claude or OpenAI Codex. AI assistance is used for
+> this repository, so it moved to GitHub.
+
 An Ansible collection for installing and configuring the borg backup utility
 across an infrastructure.
 
@@ -10,16 +24,16 @@ configuration on the clients to push the backups to the server.
 
 ### Roles
 
-- [borg_install](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/roles/borg_install):
+- [borg_install](https://github.com/lingfra/ansible-collection-lingfra-borg/tree/main/roles/borg_install):
 Installs borg backup packages.
-- [borg_server](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/roles/borg_server):
+- [borg_server](https://github.com/lingfra/ansible-collection-lingfra-borg/tree/main/roles/borg_server):
 Configures a central repository server for borg backup.
 
 ### Playbooks
 
-- [borg_install](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/playbooks/borg_install.yaml):
+- [borg_install](https://github.com/lingfra/ansible-collection-lingfra-borg/tree/main/playbooks/borg_install.yaml):
 Installs borg backup packages.
-- [borg_server](https://codeberg.org/lingfra/ansible-collection-lingfra-borg/src/branch/main/playbooks/borg_server.yaml):
+- [borg_server](https://github.com/lingfra/ansible-collection-lingfra-borg/tree/main/playbooks/borg_server.yaml):
 Configures central borg repository server.
 
 ## Installation
@@ -31,7 +45,7 @@ be used to download directly from Git:
 ```yaml
 ---
 collections:
-  - name: https://codeberg.org/lingfra/ansible-collection-lingfra-borg
+  - name: https://github.com/lingfra/ansible-collection-lingfra-borg
     version: main
     type: git
 ```
