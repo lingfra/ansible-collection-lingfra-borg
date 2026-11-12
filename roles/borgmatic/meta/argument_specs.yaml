@@ -8,6 +8,15 @@ argument_specs:
       - Longer descriptions.
       - Every list item is a new paragraph.
     options:
+      borgmatic_ssh_address_family:
+        type: "str"
+        default: "any"
+        choices:
+          - "any"
+          - "inet"
+          - "inet6"
+        description:
+          - "Configure the IP version used (inet=IPv4, inet6=IPv6)."
       borgmatic_compression:
         type: "str"
         default: "zstd"

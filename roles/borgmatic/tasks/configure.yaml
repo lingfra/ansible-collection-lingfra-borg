@@ -88,7 +88,7 @@
 
 - name: "Set borgmatic_ssh_command"
   ansible.builtin.set_fact:
-    borgmatic_ssh_command: ssh -i '{{ borgmatic_ssh_priv_key_file }}' -o 'UserKnownHostsFile={{ borgmatic_ssh_known_hosts_file }}'
+    borgmatic_ssh_command: ssh -i '{{ borgmatic_ssh_priv_key_file }}' -o 'UserKnownHostsFile={{ borgmatic_ssh_known_hosts_file }}' -o 'AddressFamily={{ borgmatic_ssh_address_family }}'
 
 # ---------- Borgmatic Config ----------
 

@@ -1,6 +1,7 @@
 ---
 # defaults file for borgmatic
 
+borgmatic_ssh_address_family: any
 borgmatic_compression: zstd
 borgmatic_systemd_service_create: true
 borgmatic_systemd_service_options: {}
