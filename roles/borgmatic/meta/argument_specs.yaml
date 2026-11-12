@@ -79,6 +79,14 @@ argument_specs:
             type: "list"
             elements: "str"
             required: false
+          checks:
+            type: "list"
+            elements: "dict"
+            required: false
+            description:
+              - "For very large backups it may be desired to modify the checking to reduce the needed time."
+              - "The options are written as-is and do not contain any checking."
+              - "Refer to [How to deal with very large backups](https://torsion.org/borgmatic/docs/how-to/deal-with-very-large-backups/) at the borgmatic wiki for more information."
           exclude_patterns:
             type: "list"
             elements: "str"
