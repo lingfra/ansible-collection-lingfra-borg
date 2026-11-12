@@ -36,8 +36,10 @@ repositories:
 encryption_passcommand: cat {{ borgmatic_backup_passphrase_file }}
 {% if repo.removable %}
 
-before_actions:
-  - {{ borgmatic_check_repo_availability_script_path }} "{repository}" "cat '{{ borgmatic_backup_passphrase_file }}'"
+commands:
+  - before: repository
+    run:
+      - {{ borgmatic_check_repo_availability_script_path }} "{repository}" "cat '{{ borgmatic_backup_passphrase_file }}'"
 {% endif %}
 {% for dbms in repo.databases_integrations %}
 
